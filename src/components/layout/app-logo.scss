@@ -1,0 +1,14 @@
+.app-logo {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 0 8px;
+
+    &__image {
+        object-fit: contain;
+    }
+
+    &__text {
+        white-space: nowrap;
+    }
+}
