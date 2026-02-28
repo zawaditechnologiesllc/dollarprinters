@@ -134,10 +134,24 @@ const FreeBots = observer(() => {
             
             const xmlContent = await response.text();
             
+            // Ensure we are on the bot builder tab and workspace is ready
+            if (!(window as any).Blockly?.derivWorkspace) {
+                dashboard.setActiveTab(1);
+                window.location.hash = 'bot_builder';
+                // Give it some time to initialize the workspace
+                await new Promise(resolve => setTimeout(resolve, 1500));
+            }
+
+            const workspace = (window as any).Blockly?.derivWorkspace;
+            
+            if (!workspace) {
+                throw new Error('Bot Builder workspace not found. Please try again.');
+            }
+
             await load({
                 block_string: xmlContent,
                 file_name: bot.name,
-                workspace: (window as any).Blockly?.derivWorkspace,
+                workspace,
                 from: save_types.LOCAL,
                 drop_event: null,
                 strategy_id: null,
@@ -147,8 +161,14 @@ const FreeBots = observer(() => {
             dashboard.setActiveTab(1);
             window.location.hash = 'bot_builder';
             
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error loading bot:', error);
+            // If it's the specific XML error, we can give a better hint
+            if (error?.message?.includes('unsupported elements')) {
+                alert('This bot contains elements that are not supported in the current version. Some blocks might be missing.');
+            } else {
+                alert(`Failed to load bot: ${error?.message || 'Unknown error'}`);
+            }
         } finally {
             setLoadingBotId(null);
         }
