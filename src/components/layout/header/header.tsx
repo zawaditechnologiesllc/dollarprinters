@@ -136,7 +136,7 @@ const AppHeader = observer(({ isAuthenticating }: TAppHeaderProps) => {
             return (
                 <div className='auth-actions'>
                     <span className='signup-message'>
-                        <Localize i18n_default_text='New to Deriv? Create your account to unlock the free premium DollarPrinter bots and automated strategies.' />
+                        <Localize i18n_default_text='New to Deriv? Get your free account to unlock premium bots.' />
                     </span>
                     <Button
                         tertiary
