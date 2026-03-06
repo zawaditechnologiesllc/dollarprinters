@@ -276,6 +276,15 @@
 .auth-actions {
     display: flex;
     padding-block: 8px;
+    align-items: center;
+
+    .signup-message {
+        font-size: 1.2rem;
+        color: var(--text-general);
+        margin-inline-end: 1.6rem;
+        max-width: 300px;
+        line-height: 1.4;
+    }
 
     button {
         font-weight: 400;
