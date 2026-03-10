@@ -33,6 +33,13 @@ export const loginUrl = ({ language }: TLoginUrl) => {
     const marketing_queries = `${signup_device ? `&signup_device=${signup_device}` : ''}${
         date_first_contact ? `&date_first_contact=${date_first_contact}` : ''
     }`;
+    
+    // Determine redirect URI based on current domain
+    const getRedirectUri = () => {
+        const origin = window.location.origin;
+        return `${origin}/auth/callback`;
+    };
+    
     const getOAuthUrl = () => {
         const current_domain = getCurrentProductionDomain();
         let oauth_domain = deriv_urls.DERIV_HOST_NAME;
@@ -43,12 +50,14 @@ export const loginUrl = ({ language }: TLoginUrl) => {
             oauth_domain = domain_suffix;
         }
 
-        const url = `https://oauth.${oauth_domain}/oauth2/authorize?app_id=${getAppId()}&l=${language}${marketing_queries}&brand=${website_name.toLowerCase()}`;
+        const redirect_uri = getRedirectUri();
+        const url = `https://oauth.${oauth_domain}/oauth2/authorize?app_id=${getAppId()}&redirect_uri=${encodeURIComponent(redirect_uri)}&l=${language}${marketing_queries}&brand=${website_name.toLowerCase()}`;
         return url;
     };
 
     if (server_url && /qa/.test(server_url)) {
-        return `https://${server_url}/oauth2/authorize?app_id=${getAppId()}&l=${language}${marketing_queries}&brand=${website_name.toLowerCase()}`;
+        const redirect_uri = getRedirectUri();
+        return `https://${server_url}/oauth2/authorize?app_id=${getAppId()}&redirect_uri=${encodeURIComponent(redirect_uri)}&l=${language}${marketing_queries}&brand=${website_name.toLowerCase()}`;
     }
 
     if (getAppId() === domain_app_ids[window.location.hostname as keyof typeof domain_app_ids]) {

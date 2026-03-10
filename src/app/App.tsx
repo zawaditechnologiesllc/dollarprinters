@@ -59,6 +59,7 @@ const router = createBrowserRouter(
             <Route index element={<AppRoot />} />
             <Route path='endpoint' element={<Endpoint />} />
             <Route path='callback' element={<CallbackPage />} />
+            <Route path='auth/callback' element={<CallbackPage />} />
             <Route path='redirect' element={<RedirectHandler />} />
             <Route path='signup-redirect' element={<SignupRedirectHandler />} />
             <Route path='free-bots' element={<FreeBots />} />
