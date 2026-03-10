@@ -13,7 +13,7 @@ export const redirectToLogin = (is_logged_in: boolean, language: string, has_par
 };
 
 export const redirectToSignUp = () => {
-    window.open('https://deriv.partners/rx?sidc=97FBD1C7-EC02-4446-A72B-926E27CF5B6A&utm_campaign=dynamicworks&utm_medium=affiliate&utm_source=CU306765');
+    window.location.href = 'https://deriv.partners/rx?sidc=97FBD1C7-EC02-4446-A72B-926E27CF5B6A&utm_campaign=dynamicworks&utm_medium=affiliate&utm_source=CU306765';
 };
 
 type TLoginUrl = {
