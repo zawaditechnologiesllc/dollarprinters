@@ -21,6 +21,7 @@ type TLoginUrl = {
 };
 
 export const loginUrl = ({ language }: TLoginUrl) => {
-    // Use the hardcoded OAuth URL for dollarprinter.pro
-    return 'https://oauth.deriv.com/oauth2/authorize?app_id=125748&redirect_uri=https://dollarprinter.pro/auth/callback';
+    // Use dynamic origin for OAuth redirect URI to support both development and production environments
+    const callbackUri = `${window.location.origin}/auth/callback`;
+    return `https://oauth.deriv.com/oauth2/authorize?app_id=125748&redirect_uri=${encodeURIComponent(callbackUri)}`;
 };
