@@ -86,7 +86,30 @@ Preferred communication style: Simple, everyday language.
 - `localforage` - Client-side storage
 - `lz-string` / `pako` - Compression utilities
 
+## Deployment
+
+- **Platform**: Vercel (connected to GitHub, auto-deploys on push)
+- **Domain**: dollarprinter.pro
+- **Build command**: `npm run build`
+- **Output directory**: `dist`
+- **Routing**: SPA rewrites in `vercel.json` — all paths serve `index.html`
+
+## Deriv OAuth Configuration
+
+- **App ID**: 125748
+- **Login URL**: `https://oauth.deriv.com/oauth2/authorize?app_id=125748&redirect_uri=https%3A%2F%2Fdollarprinter.pro%2Fauth%2Fcallback`
+- **Redirect URI**: `https://dollarprinter.pro/auth/callback`
+- **Affiliate sign-up link**: `https://deriv.partners/rx?sidc=97FBD1C7-EC02-4446-A72B-926E27CF5B6A&utm_campaign=dynamicworks&utm_medium=affiliate&utm_source=CU306765`
+- **Important**: Deriv sends tokens as `?acct1=&token1=&cur1=` query params (NOT OIDC authorization code). Never use `@deriv-com/auth-client`'s `Callback` component for this flow.
+
 ## Recent Changes
+
+### Deriv OAuth Login Fix (March 2026)
+- Created `vercel.json` with SPA rewrites (previously only `vercel.dr.json` existed, which Vercel did not recognise)
+- Built custom `AuthCallbackPage` at `src/pages/auth-callback/auth-callback-page.tsx` that reads Deriv's `acct1`/`token1`/`cur1` params directly, stores them in localStorage, sets a `logged_state` cookie, then redirects to the dashboard
+- Added `/auth/callback` route to React Router in `src/app/App.tsx`
+- Rewrote `src/components/shared/utils/login/login.ts` with hardcoded constants for app_id 125748 and redirect URI
+- Fixed login/signup buttons in header: changed `window.open()` to `window.location.href` to avoid popup blockers; added missing `redirectToSignUp` import
 
 ### Free Bots Feature (December 2025)
 - Added Free Bots page with 12 pre-built trading bot templates
