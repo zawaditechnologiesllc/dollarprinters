@@ -2,7 +2,8 @@ import { useCallback } from 'react';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import PWAInstallButton from '@/components/pwa-install-button';
-import { generateOAuthURL, redirectToLogin, redirectToSignUp, standalone_routes } from '@/components/shared';
+import { generateOAuthURL, redirectToSignUp, standalone_routes } from '@/components/shared';
+import { loginUrl } from '@/components/shared/utils/login/login';
 import Button from '@/components/shared_ui/button';
 import useActiveAccount from '@/hooks/api/account/useActiveAccount';
 import { useOauth2 } from '@/hooks/auth/useOauth2';
@@ -38,7 +39,7 @@ const AppHeader = observer(({ isAuthenticating }: TAppHeaderProps) => {
     const has_wallet = Object.keys(accounts ?? {}).some(id => accounts?.[id].account_category === 'wallet');
 
     const currency = getCurrency?.();
-    const { language, localize } = useTranslations();
+    const { localize } = useTranslations();
     const { isSingleLoggingIn } = useOauth2();
 
     const { hubEnabledCountryList } = useFirebaseCountriesConfig();
@@ -139,8 +140,10 @@ const AppHeader = observer(({ isAuthenticating }: TAppHeaderProps) => {
                     </span>
                     <Button
                         tertiary
-                        onClick={async () => {
-                            redirectToLogin(false, language);
+                        onClick={() => {
+                            const url = loginUrl();
+                            console.log('[DollarPrinters] Login button clicked — redirecting to:', url);
+                            window.location.href = url;
                         }}
                     >
                         <Localize i18n_default_text='Log in' />

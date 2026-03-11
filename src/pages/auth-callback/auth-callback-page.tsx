@@ -11,11 +11,18 @@ const AuthCallbackPage = () => {
             try {
                 const urlParams = new URLSearchParams(window.location.search);
 
+                console.log('[DollarPrinters] /auth/callback reached');
+                console.log('[DollarPrinters] Full query string:', window.location.search);
+
                 // Deriv OAuth sends tokens directly as query params: acct1, token1, cur1, etc.
                 const acct1 = urlParams.get('acct1');
                 const token1 = urlParams.get('token1');
 
+                console.log('[DollarPrinters] acct1:', acct1);
+                console.log('[DollarPrinters] token1:', token1 ? token1.slice(0, 8) + '…[redacted]' : null);
+
                 if (!acct1 || !token1) {
+                    console.error('[DollarPrinters] Missing acct1 or token1 — aborting login');
                     setErrorMessage('Missing authentication parameters. Please try logging in again.');
                     setStatus('error');
                     return;
@@ -38,13 +45,18 @@ const AuthCallbackPage = () => {
                         token,
                         currency: cur,
                     };
+                    console.log(`[DollarPrinters] Account ${i}: loginid=${acct}, currency=${cur}`);
                 }
+
+                console.log('[DollarPrinters] Total accounts parsed:', Object.keys(accountsList).length);
 
                 // Store auth data in localStorage
                 localStorage.setItem('accountsList', JSON.stringify(accountsList));
                 localStorage.setItem('clientAccounts', JSON.stringify(clientAccounts));
                 localStorage.setItem('authToken', token1);
                 localStorage.setItem('active_loginid', acct1);
+
+                console.log('[DollarPrinters] Auth data stored in localStorage — active loginid:', acct1);
 
                 // Set logged_state cookie so silent login detection works
                 const expiryDate = new Date();
@@ -57,10 +69,14 @@ const AuthCallbackPage = () => {
                 const firstAccountData = clientAccounts[acct1];
                 const currency = firstAccountData?.currency?.toLowerCase() || 'usd';
                 const accountParam = acct1.startsWith('VR') ? 'demo' : currency;
+                const redirectTarget = `${window.location.origin}/?account=${accountParam}`;
+
+                console.log('[DollarPrinters] Redirecting to dashboard:', redirectTarget);
 
                 // Redirect to the main dashboard
-                window.location.replace(`${window.location.origin}/?account=${accountParam}`);
+                window.location.replace(redirectTarget);
             } catch (err) {
+                console.error('[DollarPrinters] Callback error:', err);
                 setErrorMessage('An unexpected error occurred during login. Please try again.');
                 setStatus('error');
             }
