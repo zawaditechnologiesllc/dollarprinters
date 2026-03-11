@@ -27,7 +27,6 @@ const i18nInstance = initializeI18n({
     cdnUrl: `${TRANSLATIONS_CDN_URL}/${R2_PROJECT_NAME}/${CROWDIN_BRANCH_NAME}`,
 });
 
-// Simple Suspense wrapper without timeout that causes dark landing page
 const SuspenseWrapper = ({ children }: { children: React.ReactNode }) => {
     const { isOnline } = useOfflineDetection();
 
@@ -41,43 +40,48 @@ const SuspenseWrapper = ({ children }: { children: React.ReactNode }) => {
 
 const router = createBrowserRouter(
     createRoutesFromElements(
-        <Route
-            path='/'
-            element={
-                <SuspenseWrapper>
-                    <TranslationProvider defaultLang='EN' i18nInstance={i18nInstance}>
-                        <StoreProvider>
-                            <RoutePromptDialog />
-                            <CoreStoreProvider>
-                                <Layout />
-                            </CoreStoreProvider>
-                        </StoreProvider>
-                    </TranslationProvider>
-                </SuspenseWrapper>
-            }
-        >
-            {/* All child routes will be passed as children to Layout */}
-            <Route index element={<AppRoot />} />
-            <Route path='endpoint' element={<Endpoint />} />
-            <Route path='callback' element={<CallbackPage />} />
-            <Route path='auth/callback' element={<AuthCallbackPage />} />
-            <Route path='redirect' element={<RedirectHandler />} />
-            <Route path='signup-redirect' element={<SignupRedirectHandler />} />
-            <Route path='free-bots' element={<FreeBots />} />
-            <Route path='analysis-tool' element={<AnalysisTool />} />
-        </Route>
+        <>
+            {/*
+             * /auth/callback is intentionally a STANDALONE top-level route.
+             * It must NOT be nested inside the Layout or any store/provider that
+             * could call requestOidcAuthentication() and redirect away before the
+             * token params are read from the URL.
+             */}
+            <Route path='/auth/callback' element={<AuthCallbackPage />} />
+
+            {/* All other routes go through the full Layout + providers */}
+            <Route
+                path='/'
+                element={
+                    <SuspenseWrapper>
+                        <TranslationProvider defaultLang='EN' i18nInstance={i18nInstance}>
+                            <StoreProvider>
+                                <RoutePromptDialog />
+                                <CoreStoreProvider>
+                                    <Layout />
+                                </CoreStoreProvider>
+                            </StoreProvider>
+                        </TranslationProvider>
+                    </SuspenseWrapper>
+                }
+            >
+                <Route index element={<AppRoot />} />
+                <Route path='endpoint' element={<Endpoint />} />
+                <Route path='callback' element={<CallbackPage />} />
+                <Route path='redirect' element={<RedirectHandler />} />
+                <Route path='signup-redirect' element={<SignupRedirectHandler />} />
+                <Route path='free-bots' element={<FreeBots />} />
+                <Route path='analysis-tool' element={<AnalysisTool />} />
+            </Route>
+        </>
     )
 );
 
 function App() {
     React.useEffect(() => {
-        // Use the invalid token handler hook to automatically retrigger OIDC authentication
-        // when an invalid token is detected and the cookie logged state is true
-
         initSurvicate();
         window?.dataLayer?.push({ event: 'page_load' });
         return () => {
-            // Clean up the invalid token handler when the component unmounts
             const survicate_box = document.getElementById('survicate-box');
             if (survicate_box) {
                 survicate_box.style.display = 'none';
@@ -105,7 +109,6 @@ function App() {
                 localStorage.setItem('active_loginid', loginid);
             };
 
-            // Handle demo account
             if (account_currency?.toUpperCase() === 'DEMO') {
                 const demo_account = Object.entries(parsed_accounts).find(([key]) => key.startsWith('VR'));
 
@@ -116,7 +119,6 @@ function App() {
                 }
             }
 
-            // Handle real account with valid currency
             if (account_currency?.toUpperCase() !== 'DEMO' && is_valid_currency) {
                 const real_account = Object.entries(parsed_client_accounts).find(
                     ([loginid, account]) =>
