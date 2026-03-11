@@ -1,0 +1,68 @@
+Audit and debug the Deriv OAuth authentication flow end-to-end.
+
+Context:
+
+* Website: https://dollarprinter.pro
+* Deriv App ID: 125748
+* Redirect URL registered in Deriv: https://dollarprinter.pro/auth/callback
+* Languages used in this repository: TypeScript, JavaScript, HTML, CSS
+
+Problem:
+Users can log in and approve access on Deriv, but when they are redirected back to the site they land on:
+
+https://dollarprinter.pro/auth/callback
+
+The page displays:
+"Missing authentication parameters. Please try logging in again."
+
+The expected redirect after approval should be:
+https://dollarprinter.pro/auth/callback?acct1=ACCOUNT_ID&token1=TOKEN
+
+Currently the callback page receives no query parameters.
+
+Tasks:
+
+1. Search the repository for ALL code related to Deriv login, OAuth, redirect_uri, and authorize endpoints.
+
+2. Identify where the login button generates the authentication URL.
+
+3. Ensure the login URL uses the correct Deriv OAuth endpoint:
+
+   https://oauth.deriv.com/oauth2/authorize
+
+4. Ensure the login URL includes the parameters:
+
+   * app_id=125748
+   * redirect_uri=https://dollarprinter.pro/auth/callback
+
+5. Ensure the login flow does NOT use:
+
+   * deriv.partners links
+   * app.deriv.com login pages
+   * bot.deriv.com login pages
+
+6. Implement a robust callback handler at /auth/callback that:
+
+   * logs the full URL using console.log(window.location.href)
+   * logs window.location.search
+   * extracts acct1 and token1
+   * stores them in localStorage
+   * redirects the user to the trading dashboard
+
+7. Ensure the router allows the /auth/callback route and does not remove query parameters.
+
+8. If this is a SPA deployment, add the required hosting rewrite rules so deep routes like /auth/callback do not return 404.
+
+9. Output the corrected implementation for:
+
+   * login button logic
+   * OAuth URL generator
+   * callback page handler
+   * router configuration if needed
+
+Goal:
+After login approval, the browser must redirect to:
+
+https://dollarprinter.pro/auth/callback?acct1=...&token1=...
+
+and automatically authenticate the user for trading.

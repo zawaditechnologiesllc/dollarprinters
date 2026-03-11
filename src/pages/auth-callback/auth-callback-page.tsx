@@ -12,6 +12,7 @@ const AuthCallbackPage = () => {
                 const urlParams = new URLSearchParams(window.location.search);
 
                 console.log('[DollarPrinters] /auth/callback reached');
+                console.log('[DollarPrinters] Full URL:', window.location.href);
                 console.log('[DollarPrinters] Full query string:', window.location.search);
 
                 // Deriv OAuth sends tokens directly as query params: acct1, token1, cur1, etc.
