@@ -40,8 +40,6 @@ export const isTestLink = () => {
     return (
         window.location.origin?.includes('.binary.sx') ||
         window.location.origin?.includes('bot-65f.pages.dev') ||
-        window.location.origin?.includes('.replit.dev') ||
-        window.location.origin?.includes('.replit.app') ||
         isLocal()
     );
 };

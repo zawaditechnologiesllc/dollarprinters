@@ -33,8 +33,6 @@ const getSelectedCurrency = (
 const CallbackPage = () => {
     return (
         <Callback
-            redirectCallbackUri={`${window.location.origin}/callback`}
-            postLoginRedirectUri={window.location.origin}
             onSignInSuccess={async (tokens: Record<string, string>, rawState: unknown) => {
                 const state = rawState as { account?: string } | null;
                 const accountsList: Record<string, string> = {};

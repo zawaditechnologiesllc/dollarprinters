@@ -3,6 +3,7 @@ import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import PWAInstallButton from '@/components/pwa-install-button';
 import { generateOAuthURL, redirectToSignUp, standalone_routes } from '@/components/shared';
+import { loginUrl } from '@/components/shared/utils/login/login';
 import Button from '@/components/shared_ui/button';
 import useActiveAccount from '@/hooks/api/account/useActiveAccount';
 import { useOauth2 } from '@/hooks/auth/useOauth2';
@@ -139,14 +140,10 @@ const AppHeader = observer(({ isAuthenticating }: TAppHeaderProps) => {
                     </span>
                     <Button
                         tertiary
-                        onClick={async () => {
-                            try {
-                                await requestOidcAuthentication({
-                                    redirectCallbackUri: `${window.location.origin}/callback`,
-                                });
-                            } catch (err) {
-                                handleOidcAuthFailure(err);
-                            }
+                        onClick={() => {
+                            const url = loginUrl();
+                            console.log('[DollarPrinters] Login button clicked — redirecting to:', url);
+                            window.location.href = url;
                         }}
                     >
                         <Localize i18n_default_text='Log in' />
