@@ -24,7 +24,7 @@ export const domain_app_ids = {
     'dbot.deriv.be': APP_IDS.PRODUCTION_BE,
     'dbot.deriv.me': APP_IDS.PRODUCTION_ME,
     'bot.replit.app': APP_IDS.LOCALHOST,
-    'dollarprinter.pro': 125748,
+    'dollarprinter.pro': '32CPSVbVcD8zxA7GHQG8s' as unknown as number,
 };
 
 export const getCurrentProductionDomain = () =>
