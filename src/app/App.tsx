@@ -7,6 +7,7 @@ import RoutePromptDialog from '@/components/route-prompt-dialog';
 import { crypto_currencies_display_order, fiat_currencies_display_order } from '@/components/shared';
 import { useOfflineDetection } from '@/hooks/useOfflineDetection';
 import { StoreProvider } from '@/hooks/useStore';
+import AuthCallbackPage from '@/pages/auth-callback';
 import CallbackPage from '@/pages/callback';
 import Endpoint from '@/pages/endpoint';
 import RedirectHandler from '@/pages/redirect';
@@ -59,7 +60,7 @@ const router = createBrowserRouter(
             <Route index element={<AppRoot />} />
             <Route path='endpoint' element={<Endpoint />} />
             <Route path='callback' element={<CallbackPage />} />
-            <Route path='auth/callback' element={<CallbackPage />} />
+            <Route path='auth/callback' element={<AuthCallbackPage />} />
             <Route path='redirect' element={<RedirectHandler />} />
             <Route path='signup-redirect' element={<SignupRedirectHandler />} />
             <Route path='free-bots' element={<FreeBots />} />

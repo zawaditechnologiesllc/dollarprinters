@@ -31,7 +31,11 @@ Preferred communication style: Simple, everyday language.
 - Support for multiple account types (demo, real, wallet-based)
 
 ### Authentication
-- OAuth2-based authentication flow with OIDC support
+- **Custom Deriv OAuth flow** using App ID `125748` and redirect URI `https://dollarprinter.pro/auth/callback`
+- Login button: `https://oauth.deriv.com/oauth2/authorize?app_id=125748&redirect_uri=https://dollarprinter.pro/auth/callback`
+- Sign-up button redirects to affiliate link via `redirectToSignUp()` in `src/components/shared/utils/login/login.ts`
+- Custom callback handler at `src/pages/auth-callback/auth-callback-page.tsx` reads `acct1`, `token1`, `cur1` params directly from URL (Deriv sends tokens directly, not via OIDC code flow)
+- Auth tokens stored in localStorage: `authToken`, `active_loginid`, `accountsList`, `clientAccounts`
 - Token Management Backend (TMB) integration for enhanced session handling
 - Multi-account support with account switching capabilities
 
@@ -64,7 +68,8 @@ Preferred communication style: Simple, everyday language.
 - `@deriv/deriv-charts` - Charting library
 
 ### Cloud Services
-- **Cloudflare Pages** - Deployment platform
+- **Vercel** - Deployment platform (custom domain: dollarprinter.pro)
+  - `vercel.json` has SPA rewrite rule: all routes → `/index.html` to prevent 404 on `/auth/callback`
 - **Google Drive API** - Bot strategy storage and sync
 - **LiveChat** - Customer support integration
 - **Intercom** - In-app messaging (feature-flagged)
