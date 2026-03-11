@@ -1,5 +1,5 @@
 // Comprehensive Service Worker for Deriv Bot Offline Functionality
-const CACHE_NAME = 'deriv-bot-v1';
+const CACHE_NAME = 'deriv-bot-v2';
 const OFFLINE_URL = '/offline.html';
 
 // Files to cache immediately on install
@@ -438,6 +438,11 @@ function isAuthRequest(url) {
     // Helper function to check if hostname is allowed domain or subdomain
     function isAllowedDomain(hostname, allowedDomain) {
         return hostname === allowedDomain || hostname.endsWith('.' + allowedDomain);
+    }
+
+    // Always pass through the Deriv OAuth callback page so query params are never lost
+    if (url.pathname === '/auth/callback' || url.pathname === '/callback') {
+        return true;
     }
 
     // Skip all authentication-related requests

@@ -1,0 +1,62 @@
+Audit and repair the Deriv OAuth login flow across the entire repository.
+
+Project context:
+
+* Website: https://dollarprinter.pro
+* Deriv App ID: 125748
+* Redirect URL registered in Deriv: https://dollarprinter.pro/auth/callback
+* Languages: TypeScript, JavaScript, HTML, CSS
+
+Current problem:
+Users can log in and approve access on Deriv, but when they are redirected back to https://dollarprinter.pro/auth/callback the page shows:
+"Missing authentication parameters. Please try logging in again."
+
+The callback page loads but receives no query parameters. The browser URL is:
+https://dollarprinter.pro/auth/callback
+
+Expected behavior:
+After approval Deriv should redirect users to:
+https://dollarprinter.pro/auth/callback?acct1=ACCOUNT_ID&token1=TOKEN
+
+Tasks:
+
+1. Search the repository for the login button and OAuth login URL.
+
+2. Ensure the login button redirects to the Deriv OAuth endpoint:
+   https://oauth.deriv.com/oauth2/authorize
+
+3. Ensure the login URL includes the required parameters:
+
+   * app_id=125748
+   * redirect_uri=https://dollarprinter.pro/auth/callback
+
+   Example format:
+   https://oauth.deriv.com/oauth2/authorize?app_id=125748&redirect_uri=https://dollarprinter.pro/auth/callback
+
+4. Ensure the login process does NOT use the affiliate link for authentication:
+   https://deriv.partners/rx
+
+5. Implement or fix the /auth/callback handler so it:
+
+   * reads acct1 and token1 from window.location.search
+   * stores them securely (localStorage or session storage)
+   * logs debugging info if parameters are missing
+   * redirects the user to the trading dashboard after successful login
+
+6. If this project is a single-page application (React/Vite/etc), ensure the router defines a route for:
+   /auth/callback
+
+7. Ensure the callback code runs immediately before any router redirects.
+
+8. Provide the corrected implementation for:
+
+   * login button code
+   * OAuth URL generation
+   * callback handler logic
+   * router configuration if needed
+
+Goal:
+After the fix, logging in through Deriv must redirect users to:
+https://dollarprinter.pro/auth/callback?acct1=...&token1=...
+
+and automatically log them into the trading platform.
