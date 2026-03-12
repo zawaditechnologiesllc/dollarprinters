@@ -33,6 +33,7 @@ const getSelectedCurrency = (
 const CallbackPage = () => {
     return (
         <Callback
+            redirectCallbackUri={`${window.location.origin}/callback`}
             onSignInSuccess={async (tokens: Record<string, string>, rawState: unknown) => {
                 const state = rawState as { account?: string } | null;
                 const accountsList: Record<string, string> = {};
@@ -99,6 +100,12 @@ const CallbackPage = () => {
                     localStorage.setItem('authToken', tokens.token1);
                     localStorage.setItem('active_loginid', tokens.acct1);
                 }
+                // Set logged_state cookie manually — the auth-client library only sets it
+                // for Deriv-owned domains; dollarprinter.pro needs it set explicitly
+                const expiryDate = new Date();
+                expiryDate.setDate(expiryDate.getDate() + 30);
+                document.cookie = `logged_state=true; expires=${expiryDate.toUTCString()}; path=/; SameSite=Lax`;
+
                 // Determine the appropriate currency to use
                 const selected_currency = getSelectedCurrency(tokens, clientAccounts, state);
 
