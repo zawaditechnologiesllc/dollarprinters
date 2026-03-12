@@ -66,9 +66,11 @@ const AuthCallbackPage = () => {
 
                 setStatus('success');
 
-                // Determine the first real account's currency for the redirect
+                // Determine the first real account's currency for the redirect.
+                // Keep original casing from Deriv (uppercase, e.g. 'GBP') so the
+                // Layout's clientHasCurrency comparison matches and no OIDC loop fires.
                 const firstAccountData = clientAccounts[acct1];
-                const currency = firstAccountData?.currency?.toLowerCase() || 'usd';
+                const currency = firstAccountData?.currency || 'USD';
                 const accountParam = acct1.startsWith('VR') ? 'demo' : currency;
                 const redirectTarget = `${window.location.origin}/?account=${accountParam}`;
 

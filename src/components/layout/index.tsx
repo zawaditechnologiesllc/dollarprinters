@@ -39,7 +39,9 @@ const Layout = observer(() => {
     const accountsList = JSON.parse(localStorage.getItem('accountsList') ?? '{}');
     const isClientAccountsPopulated = Object.keys(accountsList).length > 0;
     const ifClientAccountHasCurrency =
-        Object.values(checkClientAccount).some((account: any) => account.currency === currency) ||
+        Object.values(checkClientAccount).some(
+            (account: any) => account.currency?.toUpperCase() === currency?.toUpperCase()
+        ) ||
         currency === 'demo' ||
         currency === '';
     const [clientHasCurrency, setClientHasCurrency] = useState(ifClientAccountHasCurrency);
