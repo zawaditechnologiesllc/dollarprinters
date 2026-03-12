@@ -1,8 +1,8 @@
 import { isStorageSupported } from '../storage/storage';
 
-const DERIV_APP_ID = '32CPSVbVcD8zxA7GHQG8s';
+const DERIV_APP_ID = 125748;
 const DERIV_OAUTH_URL = 'https://oauth.deriv.com/oauth2/authorize';
-const REDIRECT_URI = 'https://dollarprinter.pro/auth/callback';
+const REDIRECT_URI = 'https://dollarprinter.pro/callback';
 const SIGNUP_URL =
     'https://deriv.partners/rx?sidc=97FBD1C7-EC02-4446-A72B-926E27CF5B6A&utm_campaign=dynamicworks&utm_medium=affiliate&utm_source=CU306765';
 
