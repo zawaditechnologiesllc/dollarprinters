@@ -106,6 +106,15 @@ export const AuthWrapper = () => {
     React.useEffect(() => {
         const initializeAuth = async () => {
             try {
+                // /auth/callback is handled entirely by AuthCallbackPage.
+                // Do NOT call setLocalStorageToken or filterSearchParams here —
+                // doing so strips acct1/token1/cur1 from window.location.search
+                // before AuthCallbackPage's useEffect can read them.
+                if (window.location.pathname === '/auth/callback') {
+                    setIsAuthComplete(true);
+                    return;
+                }
+
                 // Pass isOnline to setLocalStorageToken to handle offline mode properly
                 await setLocalStorageToken(loginInfo, paramsToDelete, setIsAuthComplete, isOnline);
                 URLUtils.filterSearchParams(['lang']);
