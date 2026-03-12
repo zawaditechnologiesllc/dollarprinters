@@ -16,6 +16,6 @@ export const redirectToSignUp = () => {
 };
 
 export const loginUrl = () => {
-    const redirect_uri = encodeURIComponent('https://dollarprinter.pro/');
+    const redirect_uri = encodeURIComponent('https://dollarprinter.pro/auth/callback');
     return `https://oauth.deriv.com/oauth2/authorize?app_id=125748&l=EN&brand=DOLLARPRINTERPRO&redirect_uri=${redirect_uri}`;
 };

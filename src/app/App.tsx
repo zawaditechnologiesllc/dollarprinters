@@ -17,13 +17,15 @@ import { initializeI18n, localize, TranslationProvider } from '@deriv-com/transl
 import CoreStoreProvider from './CoreStoreProvider';
 import './app-root.scss';
 
-// Intercept Deriv OAuth callback landing at the root URL.
-// Deriv redirects to https://dollarprinter.pro/?acct1=...&token1=...
+// Intercept Deriv OAuth callback that lands at the root URL.
+// Deriv can redirect to https://dollarprinter.pro/?acct1=...&token1=...
 // This runs synchronously at module load — before React mounts — so the Layout
 // can never fire requestOidcAuthentication and hijack the browser away.
+// IMPORTANT: skip when already at /auth/callback to prevent a redirect loop.
 (function interceptOAuthCallback() {
     const params = new URLSearchParams(window.location.search);
-    if (params.has('acct1') && params.has('token1')) {
+    const isAlreadyAtCallback = window.location.pathname === '/auth/callback';
+    if (!isAlreadyAtCallback && params.has('acct1') && params.has('token1')) {
         window.location.replace(`/auth/callback${window.location.search}`);
     }
 })();
