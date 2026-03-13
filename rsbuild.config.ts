@@ -91,15 +91,15 @@ export default defineConfig({
             'Cross-Origin-Embedder-Policy': 'unsafe-none',
             'Cache-Control': 'no-cache',
         },
-    },
-    dev: {
-        hmr: true,
         proxy: {
             '/api': {
                 target: 'http://localhost:3001',
                 changeOrigin: true,
             },
         },
+    },
+    dev: {
+        hmr: true,
     },
     tools: {
         rspack: {
