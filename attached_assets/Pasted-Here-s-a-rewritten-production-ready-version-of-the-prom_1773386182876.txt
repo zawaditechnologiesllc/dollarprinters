@@ -1,0 +1,62 @@
+Here's a rewritten, production-ready version of the prompt:
+
+---
+
+**Add Secure Admin Panel to Repository**
+
+Deploy a protected admin interface with session-based authentication compatible with Vercel's serverless architecture.
+
+**Authentication Requirements:**
+1. Credentials stored in Vercel environment variables:
+   - `ADMIN_USER` (username)
+   - `ADMIN_PASS` (password)
+2. NO hardcoded credentials in codebase
+3. Use JWT-based sessions with HTTP-only cookies (compatible with Vercel serverless)
+4. Session expiration: 24 hours of inactivity
+5. Rate limiting: Maximum 5 login attempts per IP per 15 minutes
+
+**Routes:**
+
+`/admin-login` (public)
+- Login form with username/password fields
+- On success: create authenticated session → redirect to `/admin`
+- On failure: display error message, remain on page
+- Implement brute-force protection
+
+`/admin` (protected)
+- Dashboard with navigation to admin sections
+- Logout button that clears session and redirects to `/admin-login`
+- Placeholder sections:
+  - Bot Management
+  - Guides / Content Management
+  - Analytics
+  - System Status
+
+**Security Implementation:**
+1. Server-side route protection using Next.js middleware
+2. All `/admin/*` routes require valid session, else redirect to `/admin-login`
+3. Secure cookie configuration:
+   - `httpOnly: true`
+   - `secure: true` (HTTPS only)
+   - `sameSite: 'strict'`
+4. CSRF protection on all admin forms
+5. Password comparison using secure timing-safe method
+
+**Error Handling:**
+- Graceful failure if environment variables are missing
+- Clear error messages for invalid credentials
+- Session validation on every protected route access
+
+**Deployment Notes:**
+- Set environment variables in Vercel dashboard before deployment
+- Ensure HTTPS is enabled (default on Vercel)
+- Test authentication flow in production environment
+
+---
+
+**Key improvements from original:**
+- Removed exposed credentials from documentation
+- Specified JWT/cookie-based sessions for Vercel compatibility
+- Added security best practices (rate limiting, CSRF, secure cookies)
+- Clearer structure and implementation guidance
+- Added error handling requirements

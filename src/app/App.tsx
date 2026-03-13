@@ -34,6 +34,8 @@ const Layout = lazy(() => import('../components/layout'));
 const AppRoot = lazy(() => import('./app-root'));
 const FreeBots = lazy(() => import('../pages/free-bots'));
 const AnalysisTool = lazy(() => import('../pages/analysis-tool'));
+const AdminLogin = lazy(() => import('../pages/admin-login'));
+const AdminDashboard = lazy(() => import('../pages/admin'));
 
 const { TRANSLATIONS_CDN_URL, R2_PROJECT_NAME, CROWDIN_BRANCH_NAME } = process.env;
 const i18nInstance = initializeI18n({
@@ -61,6 +63,24 @@ const router = createBrowserRouter(
              * token params are read from the URL.
              */}
             <Route path='/auth/callback' element={<AuthCallbackPage />} />
+
+            {/* Admin routes — standalone, no Deriv providers */}
+            <Route
+                path='/admin-login'
+                element={
+                    <SuspenseWrapper>
+                        <AdminLogin />
+                    </SuspenseWrapper>
+                }
+            />
+            <Route
+                path='/admin'
+                element={
+                    <SuspenseWrapper>
+                        <AdminDashboard />
+                    </SuspenseWrapper>
+                }
+            />
 
             {/* All other routes go through the full Layout + providers */}
             <Route
