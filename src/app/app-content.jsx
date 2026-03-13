@@ -82,6 +82,18 @@ const AppContent = observer(() => {
         }
     }, [common, connectionStatus, offline_timeout]);
 
+    // Safety timeout: if still loading after 20s regardless of connection state, show dashboard
+    useEffect(() => {
+        const safetyTimeout = setTimeout(() => {
+            setIsLoading(false);
+            if (!is_api_initialized) {
+                setIsApiInitialized(true);
+            }
+        }, 20000);
+        return () => clearTimeout(safetyTimeout);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
     // Handle offline scenarios - don't wait indefinitely for API
     useEffect(() => {
         if (!isOnline && is_loading) {
