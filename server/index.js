@@ -36,7 +36,7 @@ const loginLimiter = rateLimit({
     standardHeaders: true,
     legacyHeaders: false,
     message: { success: false, error: 'Too many login attempts. Please try again in 15 minutes.' },
-    keyGenerator: req => req.ip || req.headers['x-forwarded-for'] || 'unknown',
+    validate: { xForwardedForHeader: false },
 });
 
 function timingSafeEqual(a, b) {
