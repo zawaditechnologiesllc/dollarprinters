@@ -51,7 +51,13 @@ module.exports = async function handler(req, res) {
         return res.status(401).json({ success: false, error: 'Invalid username or password.' });
     }
 
+    if (!process.env.JWT_SECRET) {
+        return res.status(500).json({ success: false, error: 'Server misconfiguration: JWT_SECRET is not set.' });
+    }
     const token = createToken(process.env.ADMIN_USER);
+    if (!token) {
+        return res.status(500).json({ success: false, error: 'Server misconfiguration: failed to create session.' });
+    }
     setAuthCookie(res, token);
     return res.status(200).json({ success: true });
 };

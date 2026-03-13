@@ -7,7 +7,7 @@ const SESSION_EXPIRY_SECONDS = 60 * 60 * 24;
 
 function getJwtSecret() {
     if (!process.env.JWT_SECRET) {
-        throw new Error('JWT_SECRET env var is not set.');
+        return null;
     }
     return process.env.JWT_SECRET;
 }
@@ -44,18 +44,22 @@ function parseCookies(req) {
 }
 
 function verifySession(req) {
+    const secret = getJwtSecret();
+    if (!secret) return null;
     const cookies = parseCookies(req);
     const token = cookies.admin_session;
     if (!token) return null;
     try {
-        return jwt.verify(token, getJwtSecret());
+        return jwt.verify(token, secret);
     } catch {
         return null;
     }
 }
 
 function createToken(username) {
-    return jwt.sign({ role: 'admin', user: username }, getJwtSecret(), {
+    const secret = getJwtSecret();
+    if (!secret) return null;
+    return jwt.sign({ role: 'admin', user: username }, secret, {
         expiresIn: SESSION_EXPIRY_SECONDS,
     });
 }
