@@ -51,8 +51,17 @@ async function api(method: string, path: string, body?: unknown) {
         opts.headers = { 'Content-Type': 'application/json' };
         opts.body = JSON.stringify(body);
     }
-    const r = await fetch(path, opts);
-    return r.json();
+    try {
+        const r = await fetch(path, opts);
+        const text = await r.text();
+        try {
+            return JSON.parse(text);
+        } catch {
+            return { success: false, error: `Server error (${r.status}): ${text.slice(0, 120)}` };
+        }
+    } catch (err: any) {
+        return { success: false, error: err?.message || 'Network error' };
+    }
 }
 
 // ─── Root ─────────────────────────────────────────────────────────────────────

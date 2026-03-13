@@ -156,9 +156,11 @@ const Layout = observer(() => {
         // Create an async IIFE to handle authentication
         (async () => {
             try {
-                // First, explicitly wait for TMB status to be determined
-                // This ensures we have the correct TMB status before proceeding
-                const tmbEnabled = await isTmbEnabled();
+                // Wait for TMB status with a 6-second timeout to avoid hanging
+                const tmbEnabled = await Promise.race([
+                    isTmbEnabled(),
+                    new Promise<boolean>(resolve => setTimeout(() => resolve(false), 6000)),
+                ]);
 
                 // Now use the result of the explicit check
                 if (tmbEnabled) {

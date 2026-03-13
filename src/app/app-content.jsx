@@ -37,6 +37,8 @@ const AppContent = observer(() => {
     const [is_loading, setIsLoading] = React.useState(true);
     const [is_eu_error_loading, setIsEuErrorLoading] = React.useState(true);
     const [offline_timeout, setOfflineTimeout] = React.useState(null);
+    const safetyTimeoutFired = React.useRef(false);
+    const loggedInLoadingTimeoutRef = React.useRef(null);
     const store = useStore();
     const { app, transactions, common, client } = store;
     const { showDigitalOptionsMaltainvestError } = app;
@@ -82,14 +84,15 @@ const AppContent = observer(() => {
         }
     }, [common, connectionStatus, offline_timeout]);
 
-    // Safety timeout: if still loading after 20s regardless of connection state, show dashboard
+    // Safety timeout: if still loading after 15s regardless of connection state, show dashboard
     useEffect(() => {
         const safetyTimeout = setTimeout(() => {
+            safetyTimeoutFired.current = true;
             setIsLoading(false);
             if (!is_api_initialized) {
                 setIsApiInitialized(true);
             }
-        }, 20000);
+        }, 15000);
         return () => clearTimeout(safetyTimeout);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
@@ -258,7 +261,10 @@ const AppContent = observer(() => {
     React.useEffect(() => {
         if (is_api_initialized) {
             init();
-            setIsLoading(true);
+            // Only set loading if the safety timeout hasn't already resolved it
+            if (!safetyTimeoutFired.current) {
+                setIsLoading(true);
+            }
             if (!client.is_logged_in) {
                 changeActiveSymbolLoadingState();
             }
@@ -269,10 +275,32 @@ const AppContent = observer(() => {
     // use is_landing_company_loaded to know got details of accounts to identify should show an error or not
     React.useEffect(() => {
         if (client.is_logged_in && client.is_landing_company_loaded && is_api_initialized) {
+            // Clear the rescue timeout since we're proceeding normally
+            if (loggedInLoadingTimeoutRef.current) {
+                clearTimeout(loggedInLoadingTimeoutRef.current);
+                loggedInLoadingTimeoutRef.current = null;
+            }
             changeActiveSymbolLoadingState();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [client.is_landing_company_loaded, is_api_initialized, client.loginid]);
+
+    // Rescue timeout: if logged in and API is ready but landing company never loads, unblock the UI
+    React.useEffect(() => {
+        if (is_api_initialized && client.is_logged_in && is_loading) {
+            loggedInLoadingTimeoutRef.current = setTimeout(() => {
+                console.log('[Timeout] Landing company load timeout — showing dashboard anyway');
+                setIsLoading(false);
+            }, 12000);
+        }
+        return () => {
+            if (loggedInLoadingTimeoutRef.current) {
+                clearTimeout(loggedInLoadingTimeoutRef.current);
+                loggedInLoadingTimeoutRef.current = null;
+            }
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [is_api_initialized, client.is_logged_in]);
 
     useEffect(() => {
         initDatadog(true);
