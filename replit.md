@@ -111,10 +111,23 @@ Preferred communication style: Simple, everyday language.
 - Rewrote `src/components/shared/utils/login/login.ts` with hardcoded constants for app_id 125748 and redirect URI
 - Fixed login/signup buttons in header: changed `window.open()` to `window.location.href` to avoid popup blockers; added missing `redirectToSignUp` import
 
+### Secure Admin Panel (March 2026)
+- Full admin panel at `/admin-login` (login) and `/admin` (dashboard)
+- JWT-based session auth via HTTP-only cookies (24h expiry), timing-safe password comparison, rate limiting (5 attempts / 15 min per IP)
+- Credentials from env vars: `ADMIN_USER`, `ADMIN_PASS`, `JWT_SECRET`
+- Admin API server (Express) runs on port 3001 — workflow: "Admin API Server" (`node server/index.js`)
+- Rsbuild proxies `/api/` → port 3001 in dev mode
+- Vercel serverless functions in `/api/admin/` (login, logout, verify) for production
+- **Bot Management**: Full CRUD backed by `public/bots/manifest.json` — edit name/desc/category/icon, toggle visibility, upload new XML bots, delete bots
+- **Announcements**: Create/edit/delete site announcements stored in `public/announcements.json`
+- **Analytics**: Page view and bot-load tracking via `POST /api/analytics/track` (public), stored in `server/analytics.json`. Dashboard shows 7-day chart, top bots, page breakdown
+- **System Status**: Live Deriv API WebSocket health check, server uptime, memory, env var status, bot library counts
+
 ### Free Bots Feature (December 2025)
 - Added Free Bots page with 12 pre-built trading bot templates
+- Bot list now loaded dynamically from `public/bots/manifest.json` (respects `visible` flag set by admin panel)
 - Bot cards display with category filtering (Speed Trading, AI Trading, Pattern Analysis, etc.)
 - Click-to-load functionality that imports bot XML into Bot Builder
-- Responsive card design with hover effects and loading states
+- Each bot load is tracked via analytics API (`POST /api/analytics/track`)
 - Bot XML files stored in `/public/bots/` directory
 - Files: `src/pages/free-bots/index.tsx`, `src/pages/free-bots/free-bots.scss`
