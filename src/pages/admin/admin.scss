@@ -48,6 +48,13 @@ $active-bg: rgba(255, 68, 79, 0.12);
     border-radius: 8px;
     z-index: 9999;
     animation: fadein 0.2s ease;
+    max-width: 380px;
+
+    &--error {
+        background: rgba(255, 68, 79, 0.15);
+        border-color: rgba(255, 68, 79, 0.4);
+        color: #ff8080;
+    }
 }
 
 @keyframes fadein { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }

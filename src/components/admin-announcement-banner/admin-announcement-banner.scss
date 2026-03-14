@@ -1,0 +1,76 @@
+.admin-banners {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    z-index: 100;
+
+    &__item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 16px;
+        font-size: 13px;
+        border-bottom: 1px solid transparent;
+
+        &--info {
+            background: rgba(90, 143, 255, 0.12);
+            border-bottom-color: rgba(90, 143, 255, 0.25);
+            color: #c8d8ff;
+        }
+
+        &--warning {
+            background: rgba(245, 166, 35, 0.12);
+            border-bottom-color: rgba(245, 166, 35, 0.25);
+            color: #f5d78e;
+        }
+
+        &--success {
+            background: rgba(78, 202, 124, 0.12);
+            border-bottom-color: rgba(78, 202, 124, 0.25);
+            color: #a0e8bc;
+        }
+    }
+
+    &__icon {
+        font-size: 15px;
+        flex-shrink: 0;
+        line-height: 1;
+    }
+
+    &__body {
+        flex: 1;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px 10px;
+        align-items: baseline;
+        min-width: 0;
+    }
+
+    &__title {
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    &__message {
+        opacity: 0.85;
+        line-height: 1.4;
+    }
+
+    &__close {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 12px;
+        opacity: 0.55;
+        flex-shrink: 0;
+        padding: 2px 6px;
+        border-radius: 4px;
+        color: inherit;
+        transition: opacity 0.15s;
+        line-height: 1;
+
+        &:hover {
+            opacity: 1;
+        }
+    }
+}

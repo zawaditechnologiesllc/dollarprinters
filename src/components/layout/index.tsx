@@ -3,6 +3,7 @@ import clsx from 'clsx';
 import Cookies from 'js-cookie';
 import { observer } from 'mobx-react-lite';
 import { Outlet } from 'react-router-dom';
+import AdminAnnouncementBanner from '@/components/admin-announcement-banner';
 import PWAUpdateNotification from '@/components/pwa-update-notification';
 import { api_base } from '@/external/bot-skeleton';
 import { useOfflineDetection } from '@/hooks/useOfflineDetection';
@@ -246,6 +247,7 @@ const Layout = observer(() => {
             })}
         >
             {!isCallbackPage && <AppHeader isAuthenticating={isAuthenticating || !isInitialAuthCheckComplete} />}
+            {!isCallbackPage && <AdminAnnouncementBanner />}
             <Body>
                 <Outlet />
             </Body>

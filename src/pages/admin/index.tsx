@@ -130,66 +130,114 @@ export default function AdminDashboard() {
 
 // ─── Bot Management ───────────────────────────────────────────────────────────
 
+const DEFAULT_META = { name: '', description: '', category: '', icon: '🤖' };
+
 function BotSection() {
     const [bots, setBots] = useState<Bot[]>([]);
     const [untracked, setUntracked] = useState<string[]>([]);
     const [loading, setLoading] = useState(true);
     const [editing, setEditing] = useState<Bot | null>(null);
     const [toast, setToast] = useState('');
+    const [toastError, setToastError] = useState(false);
     const [uploading, setUploading] = useState(false);
+    const [pendingFile, setPendingFile] = useState<File | null>(null);
+    const [uploadMeta, setUploadMeta] = useState(DEFAULT_META);
     const fileRef = useRef<HTMLInputElement>(null);
 
     const load = useCallback(async () => {
         setLoading(true);
         const d = await api('GET', '/api/admin/bots');
         if (d.success) { setBots(d.bots); setUntracked(d.untrackedFiles || []); }
+        else showToastMsg('Failed to load bots: ' + d.error, true);
         setLoading(false);
     }, []);
 
     useEffect(() => { load(); }, [load]);
 
-    const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(''), 3000); };
+    const showToastMsg = (msg: string, isError = false) => {
+        setToast(msg);
+        setToastError(isError);
+        setTimeout(() => setToast(''), 3500);
+    };
 
     const saveEdit = async () => {
         if (!editing) return;
         const d = await api('PUT', `/api/admin/bots/${editing.id}`, editing);
-        if (d.success) { setBots(prev => prev.map(b => b.id === editing.id ? d.bot : b)); setEditing(null); showToast('Bot updated.'); }
+        if (d.success) {
+            setBots(prev => prev.map(b => b.id === editing.id ? d.bot : b));
+            setEditing(null);
+            showToastMsg('Bot updated.');
+        } else {
+            showToastMsg('Save failed: ' + d.error, true);
+        }
     };
 
     const toggleVisible = async (bot: Bot) => {
         const d = await api('PUT', `/api/admin/bots/${bot.id}`, { visible: !bot.visible });
         if (d.success) setBots(prev => prev.map(b => b.id === bot.id ? d.bot : b));
+        else showToastMsg('Failed to update visibility: ' + d.error, true);
     };
 
     const deleteBot = async (bot: Bot) => {
         if (!confirm(`Delete "${bot.name}"? This also removes the XML file.`)) return;
         const d = await api('DELETE', `/api/admin/bots/${bot.id}`);
-        if (d.success) { setBots(prev => prev.filter(b => b.id !== bot.id)); showToast('Bot deleted.'); }
+        if (d.success) { setBots(prev => prev.filter(b => b.id !== bot.id)); showToastMsg('Bot deleted.'); }
+        else showToastMsg('Delete failed: ' + d.error, true);
     };
 
-    const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const onFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
-        setUploading(true);
-        const fd = new FormData();
-        fd.append('file', file);
-        const d = await api('POST', '/api/admin/bots/upload', fd);
-        if (d.success) { setBots(prev => [...prev, d.bot]); showToast(`"${d.bot.name}" uploaded.`); }
-        else showToast('Upload failed: ' + d.error);
-        setUploading(false);
+        const guessedName = file.name.replace(/\.xml$/i, '').replace(/[_-]/g, ' ').trim();
+        setUploadMeta({ name: guessedName, description: '', category: 'Uncategorized', icon: '🤖' });
+        setPendingFile(file);
         if (fileRef.current) fileRef.current.value = '';
     };
+
+    const confirmUpload = async () => {
+        if (!pendingFile) return;
+        setUploading(true);
+        const fd = new FormData();
+        fd.append('file', pendingFile);
+        fd.append('name', uploadMeta.name.trim() || pendingFile.name.replace(/\.xml$/i, ''));
+        fd.append('description', uploadMeta.description.trim() || 'No description provided.');
+        fd.append('category', uploadMeta.category.trim() || 'Uncategorized');
+        fd.append('icon', uploadMeta.icon.trim() || '🤖');
+        const d = await api('POST', '/api/admin/bots/upload', fd);
+        if (d.success) {
+            setBots(prev => [...prev, d.bot]);
+            showToastMsg(`"${d.bot.name}" uploaded successfully.`);
+        } else {
+            showToastMsg('Upload failed: ' + d.error, true);
+        }
+        setUploading(false);
+        setPendingFile(null);
+        setUploadMeta(DEFAULT_META);
+    };
+
+    const cancelUpload = () => {
+        setPendingFile(null);
+        setUploadMeta(DEFAULT_META);
+    };
+
+    const botCount = bots.length;
+    const visibleCount = bots.filter(b => b.visible).length;
 
     if (loading) return <div className='admin-spinner' />;
 
     return (
         <div>
-            {toast && <div className='admin-toast'>{toast}</div>}
+            {toast && (
+                <div className={`admin-toast${toastError ? ' admin-toast--error' : ''}`}>{toast}</div>
+            )}
+
             <div className='admin__toolbar'>
-                <span className='admin__count'>{bots.length} bots · {bots.filter(b => b.visible).length} visible</span>
+                <span className='admin__count'>
+                    {botCount} {botCount === 1 ? 'bot' : 'bots'} · {visibleCount} visible
+                </span>
                 <label className='admin__upload-btn'>
-                    {uploading ? 'Uploading…' : '+ Upload XML'}
-                    <input ref={fileRef} type='file' accept='.xml' onChange={handleUpload} hidden />
+                    + Upload XML
+                    <input ref={fileRef} type='file' accept='.xml' onChange={onFileSelect} hidden />
                 </label>
             </div>
 
@@ -197,6 +245,10 @@ function BotSection() {
                 <div className='admin__notice'>
                     ⚠ {untracked.length} XML file(s) on disk not in manifest: {untracked.join(', ')}
                 </div>
+            )}
+
+            {bots.length === 0 && (
+                <p className='admin__empty'>No bots in the manifest yet. Upload an XML file to get started.</p>
             )}
 
             <div className='admin__bot-list'>
@@ -210,7 +262,10 @@ function BotSection() {
                             <p className='admin__bot-desc'>{bot.description}</p>
                         </div>
                         <div className='admin__bot-actions'>
-                            <button className={`admin__toggle${bot.visible ? ' admin__toggle--on' : ''}`} onClick={() => toggleVisible(bot)}>
+                            <button
+                                className={`admin__toggle${bot.visible ? ' admin__toggle--on' : ''}`}
+                                onClick={() => toggleVisible(bot)}
+                            >
                                 {bot.visible ? 'Visible' : 'Hidden'}
                             </button>
                             <button className='admin__btn-edit' onClick={() => setEditing({ ...bot })}>Edit</button>
@@ -220,21 +275,106 @@ function BotSection() {
                 ))}
             </div>
 
+            {/* Upload metadata modal */}
+            {pendingFile && (
+                <div className='admin__modal-overlay' onClick={cancelUpload}>
+                    <div className='admin__modal' onClick={e => e.stopPropagation()}>
+                        <h2>Upload Bot</h2>
+                        <div className='admin__field'>
+                            <label>File</label>
+                            <input value={pendingFile.name} readOnly style={{ opacity: 0.6 }} />
+                        </div>
+                        <div className='admin__field'>
+                            <label>Bot Name *</label>
+                            <input
+                                value={uploadMeta.name}
+                                onChange={e => setUploadMeta(m => ({ ...m, name: e.target.value }))}
+                                placeholder='e.g. Expert Speed Bot'
+                                autoFocus
+                            />
+                        </div>
+                        <div className='admin__field'>
+                            <label>Description</label>
+                            <textarea
+                                value={uploadMeta.description}
+                                onChange={e => setUploadMeta(m => ({ ...m, description: e.target.value }))}
+                                rows={2}
+                                placeholder='Brief description of what this bot does'
+                            />
+                        </div>
+                        <div className='admin__field'>
+                            <label>Category</label>
+                            <input
+                                value={uploadMeta.category}
+                                onChange={e => setUploadMeta(m => ({ ...m, category: e.target.value }))}
+                                placeholder='e.g. AI Trading, Speed Trading, Even/Odd'
+                            />
+                        </div>
+                        <div className='admin__field'>
+                            <label>Icon (emoji)</label>
+                            <input
+                                value={uploadMeta.icon}
+                                onChange={e => setUploadMeta(m => ({ ...m, icon: e.target.value }))}
+                                placeholder='🤖'
+                                style={{ maxWidth: 80 }}
+                            />
+                        </div>
+                        <div className='admin__modal-actions'>
+                            <button
+                                className='admin__btn-save'
+                                onClick={confirmUpload}
+                                disabled={uploading || !uploadMeta.name.trim()}
+                            >
+                                {uploading ? 'Uploading…' : 'Upload'}
+                            </button>
+                            <button className='admin__btn-cancel' onClick={cancelUpload} disabled={uploading}>
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Edit bot modal */}
             {editing && (
                 <div className='admin__modal-overlay' onClick={() => setEditing(null)}>
                     <div className='admin__modal' onClick={e => e.stopPropagation()}>
                         <h2>Edit Bot</h2>
+                        <div className='admin__field'>
+                            <label>File</label>
+                            <input value={editing.fileName} readOnly style={{ opacity: 0.6 }} />
+                        </div>
                         {(['name', 'description', 'category', 'icon'] as const).map(field => (
                             <div key={field} className='admin__field'>
-                                <label>{field.charAt(0).toUpperCase() + field.slice(1)}</label>
+                                <label>{field.charAt(0).toUpperCase() + field.slice(1)}{field === 'name' ? ' *' : ''}</label>
                                 {field === 'description'
                                     ? <textarea value={editing[field]} onChange={e => setEditing({ ...editing, [field]: e.target.value })} rows={3} />
-                                    : <input value={editing[field]} onChange={e => setEditing({ ...editing, [field]: e.target.value })} />
+                                    : <input
+                                        value={editing[field]}
+                                        onChange={e => setEditing({ ...editing, [field]: e.target.value })}
+                                        style={field === 'icon' ? { maxWidth: 80 } : undefined}
+                                      />
                                 }
                             </div>
                         ))}
+                        <div className='admin__field'>
+                            <label>Visibility</label>
+                            <select
+                                value={editing.visible ? 'visible' : 'hidden'}
+                                onChange={e => setEditing({ ...editing, visible: e.target.value === 'visible' })}
+                            >
+                                <option value='visible'>Visible to users</option>
+                                <option value='hidden'>Hidden from users</option>
+                            </select>
+                        </div>
                         <div className='admin__modal-actions'>
-                            <button className='admin__btn-save' onClick={saveEdit}>Save</button>
+                            <button
+                                className='admin__btn-save'
+                                onClick={saveEdit}
+                                disabled={!editing.name.trim()}
+                            >
+                                Save Changes
+                            </button>
                             <button className='admin__btn-cancel' onClick={() => setEditing(null)}>Cancel</button>
                         </div>
                     </div>
@@ -252,46 +392,72 @@ function AnnouncementsSection() {
     const [form, setForm] = useState({ title: '', message: '', type: 'info' as 'info' | 'warning' | 'success' });
     const [editing, setEditing] = useState<Announcement | null>(null);
     const [toast, setToast] = useState('');
+    const [toastError, setToastError] = useState(false);
+    const [submitting, setSubmitting] = useState(false);
 
     const load = useCallback(async () => {
         setLoading(true);
         const d = await api('GET', '/api/admin/announcements');
         if (d.success) setList(d.announcements);
+        else showToastMsg('Failed to load announcements: ' + d.error, true);
         setLoading(false);
     }, []);
 
     useEffect(() => { load(); }, [load]);
 
-    const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(''), 3000); };
+    const showToastMsg = (msg: string, isError = false) => {
+        setToast(msg);
+        setToastError(isError);
+        setTimeout(() => setToast(''), 3500);
+    };
 
     const create = async (e: React.FormEvent) => {
         e.preventDefault();
+        setSubmitting(true);
         const d = await api('POST', '/api/admin/announcements', form);
-        if (d.success) { setList(prev => [...prev, d.announcement]); setForm({ title: '', message: '', type: 'info' }); showToast('Announcement created.'); }
+        if (d.success) {
+            setList(prev => [...prev, d.announcement]);
+            setForm({ title: '', message: '', type: 'info' });
+            showToastMsg('Announcement published. Users will see it immediately.');
+        } else {
+            showToastMsg('Failed to create: ' + d.error, true);
+        }
+        setSubmitting(false);
     };
 
     const toggleActive = async (item: Announcement) => {
         const d = await api('PUT', `/api/admin/announcements/${item.id}`, { active: !item.active });
         if (d.success) setList(prev => prev.map(a => a.id === item.id ? d.announcement : a));
+        else showToastMsg('Failed to update: ' + d.error, true);
     };
 
     const saveEdit = async () => {
         if (!editing) return;
         const d = await api('PUT', `/api/admin/announcements/${editing.id}`, editing);
-        if (d.success) { setList(prev => prev.map(a => a.id === editing.id ? d.announcement : a)); setEditing(null); showToast('Updated.'); }
+        if (d.success) {
+            setList(prev => prev.map(a => a.id === editing.id ? d.announcement : a));
+            setEditing(null);
+            showToastMsg('Announcement updated.');
+        } else {
+            showToastMsg('Failed to save: ' + d.error, true);
+        }
     };
 
     const remove = async (id: string) => {
         if (!confirm('Delete this announcement?')) return;
         const d = await api('DELETE', `/api/admin/announcements/${id}`);
-        if (d.success) { setList(prev => prev.filter(a => a.id !== id)); showToast('Deleted.'); }
+        if (d.success) { setList(prev => prev.filter(a => a.id !== id)); showToastMsg('Announcement deleted.'); }
+        else showToastMsg('Failed to delete: ' + d.error, true);
     };
 
     if (loading) return <div className='admin-spinner' />;
 
     return (
         <div>
-            {toast && <div className='admin-toast'>{toast}</div>}
+            {toast && <div className={`admin-toast${toastError ? ' admin-toast--error' : ''}`}>{toast}</div>}
+            <div className='admin__notice' style={{ marginBottom: 20 }}>
+                💬 Active announcements appear as <strong>colored banners</strong> at the top of the app for all users. Users can individually dismiss them.
+            </div>
             <form className='admin__announce-form' onSubmit={create}>
                 <h3>New Announcement</h3>
                 <div className='admin__field'>
@@ -310,7 +476,9 @@ function AnnouncementsSection() {
                         <option value='success'>Success</option>
                     </select>
                 </div>
-                <button type='submit' className='admin__btn-save'>Publish</button>
+                <button type='submit' className='admin__btn-save' disabled={submitting}>
+                    {submitting ? 'Publishing…' : 'Publish'}
+                </button>
             </form>
 
             <h3 style={{ margin: '28px 0 12px', color: '#aaa', fontSize: '14px' }}>EXISTING ({list.length})</h3>
