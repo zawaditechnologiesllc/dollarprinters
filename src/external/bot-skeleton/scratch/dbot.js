@@ -116,6 +116,7 @@ class DBot {
                 }
                 const el_scratch_div = document.getElementById('scratch_div');
                 if (!el_scratch_div) {
+                    reject(new Error('scratch_div element not found'));
                     return;
                 }
 

@@ -117,6 +117,13 @@ If rsbuild fails to start with `rsbuild: not found`, recreate these symlinks man
 
 ## Recent Changes
 
+### Bot Builder & Chart Fixes (March 2026)
+- **Bot Builder**: Wrapped `DBot.initWorkspace()` in try-catch with `finally` block in `app-store.ts` so `blockly_store.setLoading(false)` is always called even if workspace init throws. Also fixed a hanging promise in `dbot.js` when `#scratch_div` element is not found (was silently returning without resolving/rejecting; now properly rejects).
+- **Charts**: Fixed `updateSymbol` in `chart-store.ts` to be async and await `api_base.active_symbols_promise` when active symbols haven't loaded yet. This ensures the chart gets a valid symbol (e.g., `R_100`) after the API connection is established and resolves the chart returning `null` on first load.
+- **Google Drive**: Added `client_id` guard before initializing `google.accounts.oauth2.initTokenClient()` in `google-drive-store.ts`. Without this, the missing `GD_CLIENT_ID` env var caused an unhandled error on every page load.
+- **Dev Server**: Fixed workflow command to use `node ./node_modules/@rsbuild/core/bin/rsbuild.js dev` (the `rsbuild` binary symlink in PATH is broken after npm install).
+
+
 ### Deriv OAuth Login Fix (March 2026)
 - Created `vercel.json` with SPA rewrites (previously only `vercel.dr.json` existed, which Vercel did not recognise)
 - Built custom `AuthCallbackPage` at `src/pages/auth-callback/auth-callback-page.tsx` that reads Deriv's `acct1`/`token1`/`cur1` params directly, stores them in localStorage, sets a `logged_state` cookie, then redirects to the dashboard

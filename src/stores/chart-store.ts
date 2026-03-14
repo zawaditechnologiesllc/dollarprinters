@@ -1,4 +1,4 @@
-import { action, computed, makeObservable, observable, reaction } from 'mobx';
+import { action, computed, makeObservable, observable, reaction, runInAction } from 'mobx';
 import { LocalStore } from '@/components/shared';
 import { api_base } from '@/external/bot-skeleton';
 import RootStore from './root-store';
@@ -65,14 +65,25 @@ export default class ChartStore {
         // main_content.setActiveTab(tabs_title.WORKSPACE);
     };
 
-    updateSymbol = () => {
-        const workspace = window.Blockly.derivWorkspace;
+    updateSymbol = async () => {
+        const workspace = window.Blockly?.derivWorkspace;
         const market_block = workspace?.getAllBlocks().find((block: window.Blockly.Block) => {
             return block.type === 'trade_definition_market';
         });
 
-        const symbol = market_block?.getFieldValue('SYMBOL_LIST') ?? api_base?.active_symbols[0]?.symbol;
-        this.symbol = symbol;
+        let symbol = market_block?.getFieldValue('SYMBOL_LIST') ?? api_base?.active_symbols?.[0]?.symbol;
+
+        if (!symbol && api_base?.active_symbols_promise) {
+            try {
+                await api_base.active_symbols_promise;
+                symbol =
+                    market_block?.getFieldValue('SYMBOL_LIST') ?? api_base?.active_symbols?.[0]?.symbol;
+            } catch {
+                // ignore - will try again on next render
+            }
+        }
+
+        if (symbol) runInAction(() => { this.symbol = symbol; });
     };
 
     onSymbolChange = (symbol: string) => {
