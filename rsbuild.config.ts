@@ -93,6 +93,13 @@ export default defineConfig({
             'Cross-Origin-Embedder-Policy': 'unsafe-none',
             'Cache-Control': 'no-cache',
         },
+        publicDir: [
+            { name: './public' },
+            {
+                name: './node_modules/@deriv/deriv-charts/dist',
+                prefix: '/js/smartcharts',
+            },
+        ],
         proxy: {
             '/api': {
                 target: 'http://localhost:3001',
