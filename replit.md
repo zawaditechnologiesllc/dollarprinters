@@ -102,6 +102,19 @@ Preferred communication style: Simple, everyday language.
 - **Affiliate sign-up link**: `https://deriv.partners/rx?sidc=97FBD1C7-EC02-4446-A72B-926E27CF5B6A&utm_campaign=dynamicworks&utm_medium=affiliate&utm_source=CU306765`
 - **Important**: Deriv sends tokens as `?acct1=&token1=&cur1=` query params (NOT OIDC authorization code). Never use `@deriv-com/auth-client`'s `Callback` component for this flow.
 
+## Known Environment Notes
+
+### pnpm Symlink Fragility
+pnpm stores packages in `node_modules/.pnpm/` and symlinks them into `node_modules/`. If any `pnpm install` run is interrupted, symlinks can be silently dropped. Two packages that are prone to this:
+- `node_modules/react-virtualized` → `.pnpm/react-virtualized@9.22.6_.../node_modules/react-virtualized`
+- `node_modules/@datadog/browser-rum` → `.pnpm/@datadog+browser-rum@5.35.1/node_modules/@datadog/browser-rum`
+- `node_modules/@rsbuild/core` → `.pnpm/@rsbuild+core@1.7.3/node_modules/@rsbuild/core`
+- `node_modules/@rspack/core` → `.pnpm/@rspack+core@1.7.8_.../node_modules/@rspack/core`
+
+If rsbuild fails to start with `rsbuild: not found`, recreate these symlinks manually using `ln -sfn`.
+
+`@datadog/browser-rum` is aliased in `rsbuild.config.ts` to its CJS entry (`cjs/entries/main.js`) to avoid ESM linking errors with `@datadog/browser-core`.
+
 ## Recent Changes
 
 ### Deriv OAuth Login Fix (March 2026)

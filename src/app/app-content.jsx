@@ -84,7 +84,7 @@ const AppContent = observer(() => {
         }
     }, [common, connectionStatus, offline_timeout]);
 
-    // Safety timeout: if still loading after 15s regardless of connection state, show dashboard
+    // Safety timeout: if still loading after 8s regardless of connection state, show dashboard
     useEffect(() => {
         const safetyTimeout = setTimeout(() => {
             safetyTimeoutFired.current = true;
@@ -92,7 +92,7 @@ const AppContent = observer(() => {
             if (!is_api_initialized) {
                 setIsApiInitialized(true);
             }
-        }, 15000);
+        }, 8000);
         return () => clearTimeout(safetyTimeout);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
@@ -291,7 +291,7 @@ const AppContent = observer(() => {
             loggedInLoadingTimeoutRef.current = setTimeout(() => {
                 console.log('[Timeout] Landing company load timeout — showing dashboard anyway');
                 setIsLoading(false);
-            }, 12000);
+            }, 6000);
         }
         return () => {
             if (loggedInLoadingTimeoutRef.current) {

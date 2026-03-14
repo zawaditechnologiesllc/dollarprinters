@@ -42,11 +42,27 @@ const AppRoot = () => {
     const [, setIsTmbEnabled] = useState(false);
     const { isTmbEnabled } = useTMB();
 
+    // Absolute safety net: if nothing resolves in 10s, force the app open
+    useEffect(() => {
+        const absoluteTimeout = setTimeout(() => {
+            console.warn('[AppRoot] Absolute safety timeout — forcing app open');
+            setIsTmbCheckComplete(true);
+            setIsApiInitialized(true);
+        }, 10000);
+        return () => clearTimeout(absoluteTimeout);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
     // Effect to check TMB status - independent of API initialization
     useEffect(() => {
         const checkTmbStatus = async () => {
             try {
-                const tmb_status = await isTmbEnabled();
+                // Race isTmbEnabled against a 5-second timeout so a slow/blocked
+                // Firebase request never freezes the entire loading sequence.
+                const tmb_status = await Promise.race([
+                    isTmbEnabled(),
+                    new Promise<boolean>(resolve => setTimeout(() => resolve(false), 5000)),
+                ]);
                 const final_status = tmb_status || window.is_tmb_enabled === true;
 
                 setIsTmbEnabled(final_status);
