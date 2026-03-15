@@ -6,6 +6,8 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 const isDev = process.env.NODE_ENV !== 'production';
 
+const DERIV_CHARTS_DIST = path.resolve(__dirname, 'node_modules/@deriv/deriv-charts/dist');
+
 module.exports = {
     mode: isDev ? 'development' : 'production',
     devtool: isDev ? 'cheap-module-source-map' : false,
@@ -104,6 +106,41 @@ module.exports = {
                     },
                     noErrorOnMissing: true,
                 },
+                {
+                    from: path.join(DERIV_CHARTS_DIST, '*.smartcharts.js'),
+                    to: 'js/smartcharts/[name][ext]',
+                    noErrorOnMissing: true,
+                },
+                {
+                    from: path.join(DERIV_CHARTS_DIST, 'smartcharts.js'),
+                    to: 'js/smartcharts/[name][ext]',
+                    noErrorOnMissing: true,
+                },
+                {
+                    from: path.join(DERIV_CHARTS_DIST, 'smartcharts.css'),
+                    to: 'js/smartcharts/[name][ext]',
+                    noErrorOnMissing: true,
+                },
+                {
+                    from: path.join(DERIV_CHARTS_DIST, 'sprite-*.smartcharts.svg'),
+                    to: 'js/smartcharts/[name][ext]',
+                    noErrorOnMissing: true,
+                },
+                {
+                    from: path.join(DERIV_CHARTS_DIST, 'chart/assets/*'),
+                    to: 'assets/[name][ext]',
+                    noErrorOnMissing: true,
+                },
+                {
+                    from: path.join(DERIV_CHARTS_DIST, 'chart/assets/fonts/*'),
+                    to: 'assets/fonts/[name][ext]',
+                    noErrorOnMissing: true,
+                },
+                {
+                    from: path.join(DERIV_CHARTS_DIST, 'chart/assets/shaders/*'),
+                    to: 'assets/shaders/[name][ext]',
+                    noErrorOnMissing: true,
+                },
             ],
         }),
         new webpack.DefinePlugin({
@@ -131,6 +168,16 @@ module.exports = {
             'Cross-Origin-Embedder-Policy': 'unsafe-none',
             'Cache-Control': 'no-cache',
         },
+        static: [
+            {
+                directory: path.resolve(__dirname, 'public'),
+                publicPath: '/',
+            },
+            {
+                directory: DERIV_CHARTS_DIST,
+                publicPath: '/js/smartcharts',
+            },
+        ],
         proxy: [
             {
                 context: ['/api'],

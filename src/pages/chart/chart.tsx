@@ -54,29 +54,15 @@ const Chart = observer(({ show_digits_stats }: { show_digits_stats: boolean }) =
     const { is_drawer_open } = run_panel;
     const { is_chart_modal_visible } = dashboard;
     const settings = {
-        assetInformation: false, // ui.is_chart_asset_info_visible,
+        assetInformation: false,
         countdown: true,
-        isHighestLowestMarkerEnabled: false, // TODO: Pending UI,
+        isHighestLowestMarkerEnabled: false,
         language: common.current_language.toLowerCase(),
         position: ui.is_chart_layout_default ? 'bottom' : 'left',
         theme: ui.is_dark_mode_on ? 'dark' : 'light',
     };
-    console.log({
-        chart_type,
-        getMarketsOrder,
-        granularity,
-        onSymbolChange,
-        setChartStatus,
-        symbol,
-        updateChartType,
-        updateGranularity,
-        updateSymbol,
-        setChartSubscriptionId,
-        chart_subscription_id,
-    });
 
     useEffect(() => {
-        // Safari browser detection
         const isSafariBrowser = () => {
             const ua = navigator.userAgent.toLowerCase();
             return ua.indexOf('safari') !== -1 && ua.indexOf('chrome') === -1 && ua.indexOf('android') === -1;
@@ -98,34 +84,49 @@ const Chart = observer(({ show_digits_stats }: { show_digits_stats: boolean }) =
     }, [symbol, updateSymbol]);
 
     const requestAPI = (req: ServerTimeRequest | ActiveSymbolsRequest | TradingTimesRequest) => {
+        if (!chart_api.api) return Promise.reject(new Error('Chart API not initialized'));
         return chart_api.api.send(req);
     };
+
+    const requestForget = (subscription_id: string) => {
+        if (!subscription_id || !chart_api.api) return;
+        if (subscriptions[subscription_id]) {
+            subscriptions[subscription_id]?.unsubscribe?.();
+            subscriptions[subscription_id] = null;
+        }
+        chart_api.api.forget(subscription_id);
+    };
+
     const requestForgetStream = (subscription_id: string) => {
-        subscription_id && chart_api.api.forget(subscription_id);
+        if (!subscription_id || !chart_api.api) return;
+        chart_api.api.forget(subscription_id);
     };
 
     const requestSubscribe = async (req: TicksStreamRequest, callback: (data: any) => void) => {
+        if (!chart_api.api) return;
         try {
             requestForgetStream(chartSubscriptionIdRef.current);
             const history = await chart_api.api.send(req);
-            setChartSubscriptionId(history?.subscription.id);
+            const sub_id = history?.subscription?.id;
+            if (sub_id) {
+                setChartSubscriptionId(sub_id);
+            }
             if (history) callback(history);
-            if (req.subscribe === 1) {
-                subscriptions[history?.subscription.id] = chart_api.api
+            if (req.subscribe === 1 && sub_id) {
+                subscriptions[sub_id] = chart_api.api
                     .onMessage()
                     ?.subscribe(({ data }: { data: TicksHistoryResponse }) => {
                         callback(data);
                     });
             }
         } catch (e) {
-            // eslint-disable-next-line no-console
-            (e as TError)?.error?.code === 'MarketIsClosed' && callback([]); //if market is closed sending a empty array  to resolve
-            console.log((e as TError)?.error?.message);
+            (e as TError)?.error?.code === 'MarketIsClosed' && callback([]);
+            console.error('[Chart] requestSubscribe error:', (e as TError)?.error?.message);
         }
     };
 
-    if (!symbol) return null;
     const is_connection_opened = !!chart_api?.api;
+
     return (
         <div
             className={classNames('dashboard__chart-wrapper', {
@@ -135,37 +136,39 @@ const Chart = observer(({ show_digits_stats }: { show_digits_stats: boolean }) =
             })}
             dir='ltr'
         >
-            <SmartChart
-                id='dbot'
-                barriers={barriers}
-                showLastDigitStats={show_digits_stats}
-                chartControlsWidgets={null}
-                enabledChartFooter={false}
-                chartStatusListener={(v: boolean) => setChartStatus(!v)}
-                toolbarWidget={() => (
-                    <ToolbarWidgets
-                        updateChartType={updateChartType}
-                        updateGranularity={updateGranularity}
-                        position={!isDesktop ? 'bottom' : 'top'}
-                        isDesktop={isDesktop}
-                    />
-                )}
-                chartType={chart_type}
-                isMobile={isMobile}
-                enabledNavigationWidget={isDesktop}
-                granularity={granularity}
-                requestAPI={requestAPI}
-                requestForget={() => {}}
-                requestForgetStream={() => {}}
-                requestSubscribe={requestSubscribe}
-                settings={settings}
-                symbol={symbol}
-                topWidgets={() => <ChartTitle onChange={onSymbolChange} />}
-                isConnectionOpened={is_connection_opened}
-                getMarketsOrder={getMarketsOrder}
-                isLive
-                leftMargin={80}
-            />
+            {symbol && (
+                <SmartChart
+                    id='dbot'
+                    barriers={barriers}
+                    showLastDigitStats={show_digits_stats}
+                    chartControlsWidgets={null}
+                    enabledChartFooter={false}
+                    chartStatusListener={(v: boolean) => setChartStatus(!v)}
+                    toolbarWidget={() => (
+                        <ToolbarWidgets
+                            updateChartType={updateChartType}
+                            updateGranularity={updateGranularity}
+                            position={!isDesktop ? 'bottom' : 'top'}
+                            isDesktop={isDesktop}
+                        />
+                    )}
+                    chartType={chart_type}
+                    isMobile={isMobile}
+                    enabledNavigationWidget={isDesktop}
+                    granularity={granularity}
+                    requestAPI={requestAPI}
+                    requestForget={requestForget}
+                    requestForgetStream={requestForgetStream}
+                    requestSubscribe={requestSubscribe}
+                    settings={settings}
+                    symbol={symbol}
+                    topWidgets={() => <ChartTitle onChange={onSymbolChange} />}
+                    isConnectionOpened={is_connection_opened}
+                    getMarketsOrder={getMarketsOrder}
+                    isLive
+                    leftMargin={80}
+                />
+            )}
         </div>
     );
 });

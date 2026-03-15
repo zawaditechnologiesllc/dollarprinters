@@ -79,5 +79,25 @@ Set these in Replit Secrets for full functionality:
 - `TRACKJS_TOKEN` — Error tracking
 - `DATADOG_APPLICATION_ID`, `DATADOG_CLIENT_TOKEN`, etc. — Analytics
 
+## Chart (SmartChart) Integration
+
+- `@deriv/deriv-charts` lazy-loads JS chunks (e.g. `*.smartcharts.js`) from the `/js/smartcharts/` URL path.
+- **Webpack devServer** now serves `node_modules/@deriv/deriv-charts/dist` at `/js/smartcharts` via the `static` array.
+- **CopyPlugin** copies smartcharts files to `dist/js/smartcharts/` for production builds.
+- `chart_api` (a singleton `ChartAPI` instance) creates its own WebSocket to Deriv; initialized via `api_base.ts` on connection.
+- `chart.tsx` implements `requestAPI`, `requestForget`, `requestForgetStream`, `requestSubscribe` inline using `chart_api.api`.
+- The `SmartChart` component only renders when `symbol` is resolved (loaded from localStorage or first active symbol).
+
+## Bot Builder (Blockly) Integration
+
+- `DBot.initWorkspace('/', ...)` injects Blockly into `#scratch_div` element.
+- Blockly media files served from `/assets/media/` (→ `public/assets/media/`).
+- `setDBotEngineStores()` must be called before `app.onMount()` — this happens in `app-content.jsx`'s `init()` which runs as soon as `is_api_initialized` is true.
+- `workspace-wrapper.tsx` renders the workspace UI only when `!is_loading && window.Blockly?.derivWorkspace`.
+
+## GitHub Remote
+
+Remote `origin` is configured to `https://github.com/zawaditechnologiesllc/dollarprinters`. Pushing requires a GitHub personal access token (PAT) — set as `GITHUB_TOKEN` in Replit Secrets, then configure git credentials.
+
 ## Node Version
 Node 22 (upgraded from 20 for Replit compatibility).
