@@ -169,9 +169,9 @@
         "tsconfig-paths-webpack-plugin": "^4.1.0",
         "typescript": "^5.9.3",
         "url": "^0.11.3",
-        "webpack": "^5.92.1",
+        "webpack": "^5.105.4",
         "webpack-cli": "^5.1.4",
-        "webpack-dev-server": "^5.1.0"
+        "webpack-dev-server": "^5.2.3"
     },
     "optionalDependencies": {
         "@rspack/binding-linux-x64-gnu": "^1.7.6",
