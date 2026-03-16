@@ -54,7 +54,10 @@ const FreeBots = observer(() => {
             if (!(window as any).Blockly?.derivWorkspace) {
                 dashboard.setActiveTab(1);
                 window.location.hash = 'bot_builder';
-                await new Promise(resolve => setTimeout(resolve, 1500));
+                const deadline = Date.now() + 15000;
+                while (!(window as any).Blockly?.derivWorkspace && Date.now() < deadline) {
+                    await new Promise(resolve => setTimeout(resolve, 200));
+                }
             }
 
             const workspace = (window as any).Blockly?.derivWorkspace;

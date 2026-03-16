@@ -83,6 +83,26 @@ const Chart = observer(({ show_digits_stats }: { show_digits_stats: boolean }) =
         if (!symbol) updateSymbol();
     }, [symbol, updateSymbol]);
 
+    const [isConnected, setIsConnected] = useState(!!chart_api?.api);
+
+    useEffect(() => {
+        if (chart_api?.api) {
+            setIsConnected(true);
+            return;
+        }
+        const interval = setInterval(() => {
+            if (chart_api?.api) {
+                setIsConnected(true);
+                clearInterval(interval);
+            }
+        }, 300);
+        return () => clearInterval(interval);
+    }, []);
+
+    useEffect(() => {
+        if (isConnected && !symbol) updateSymbol();
+    }, [isConnected, symbol, updateSymbol]);
+
     const requestAPI = (req: ServerTimeRequest | ActiveSymbolsRequest | TradingTimesRequest) => {
         if (!chart_api.api) return Promise.reject(new Error('Chart API not initialized'));
         return chart_api.api.send(req);
@@ -125,7 +145,7 @@ const Chart = observer(({ show_digits_stats }: { show_digits_stats: boolean }) =
         }
     };
 
-    const is_connection_opened = !!chart_api?.api;
+    const is_connection_opened = isConnected;
 
     return (
         <div
