@@ -86,6 +86,9 @@ importers:
       debounce:
         specifier: ^2.2.0
         version: 2.2.0
+      dom-helpers:
+        specifier: ^6.0.1
+        version: 6.0.1
       dompurify:
         specifier: ^3.3.3
         version: 3.3.3
@@ -122,6 +125,9 @@ importers:
       localforage:
         specifier: ^1.10.0
         version: 1.10.0
+      lodash-es:
+        specifier: ^4.17.23
+        version: 4.17.23
       lz-string:
         specifier: ^1.5.0
         version: 1.5.0
@@ -182,6 +188,9 @@ importers:
       redux-thunk:
         specifier: ^3.1.0
         version: 3.1.0(redux@5.0.1)
+      style-loader:
+        specifier: ^4.0.0
+        version: 4.0.0(webpack@5.105.4)
       trackjs:
         specifier: ^3.10.4
         version: 3.10.4
@@ -436,13 +445,13 @@ importers:
         specifier: ^0.11.3
         version: 0.11.4
       webpack:
-        specifier: ^5.92.1
+        specifier: ^5.105.4
         version: 5.105.4(webpack-cli@5.1.4)
       webpack-cli:
         specifier: ^5.1.4
         version: 5.1.4(webpack-dev-server@5.2.3)(webpack@5.105.4)
       webpack-dev-server:
-        specifier: ^5.1.0
+        specifier: ^5.2.3
         version: 5.2.3(tslib@2.8.1)(webpack-cli@5.1.4)(webpack@5.105.4)
     optionalDependencies:
       '@rspack/binding-linux-x64-gnu':
@@ -4002,6 +4011,9 @@ packages:
 
   dom-helpers@5.2.1:
     resolution: {integrity: sha512-nRCa7CK3VTrM2NmGkIy4cbK7IZlgBE/PYMn55rrXefr5xXDP0LdtfPnblFDoVdcAfslJ7or6iqAUnx0CCGIWQA==}
+
+  dom-helpers@6.0.1:
+    resolution: {integrity: sha512-IKySryuFwseGkrCA/pIqlwUPOD50w1Lj/B2Yief3vBOP18k5y4t+hTqKh55gULDVeJMRitcozve+g/wVFf4sFQ==}
 
   dom-mutator@0.6.0:
     resolution: {integrity: sha512-iCt9o0aYfXMUkz/43ZOAUFQYotjGB+GNbYJiJdz4TgXkyToXbbRy5S6FbTp72lRBtfpUMwEc1KmpFEU4CZeoNg==}
@@ -7989,6 +8001,12 @@ packages:
   strip-json-comments@3.1.1:
     resolution: {integrity: sha512-6fPc+R4ihwqP6N/aIv2f1gMH8lOVtWQHoqC4yK6oSDVVocumAsfCqjkXnqiYMhmMwS/mEHLp7Vehlt3ql6lEig==}
     engines: {node: '>=8'}
+
+  style-loader@4.0.0:
+    resolution: {integrity: sha512-1V4WqhhZZgjVAVJyt7TdDPZoPBPNHbekX4fWnCJL1yQukhCeZhJySUL+gL9y6sNdN95uEOS83Y55SqHcP7MzLA==}
+    engines: {node: '>= 18.12.0'}
+    peerDependencies:
+      webpack: ^5.27.0
 
   style-to-js@1.1.21:
     resolution: {integrity: sha512-RjQetxJrrUJLQPHbLku6U/ocGtzyjbJMP9lCNK7Ag0CNh690nSH8woqWH9u16nMjYBAok+i7JO1NP2pOy8IsPQ==}
@@ -13104,6 +13122,11 @@ snapshots:
       '@babel/runtime': 7.28.6
       csstype: 3.2.3
 
+  dom-helpers@6.0.1:
+    dependencies:
+      '@babel/runtime': 7.28.6
+      csstype: 3.2.3
+
   dom-mutator@0.6.0:
     optional: true
 
@@ -17703,6 +17726,10 @@ snapshots:
   strip-json-comments@2.0.1: {}
 
   strip-json-comments@3.1.1: {}
+
+  style-loader@4.0.0(webpack@5.105.4):
+    dependencies:
+      webpack: 5.105.4(webpack-cli@5.1.4)
 
   style-to-js@1.1.21:
     dependencies:
