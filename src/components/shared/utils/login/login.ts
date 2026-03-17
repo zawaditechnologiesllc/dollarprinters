@@ -19,6 +19,5 @@ export const redirectToSignUp = () => {
 };
 
 export const loginUrl = () => {
-    const redirect_uri = encodeURIComponent(`${window.location.origin}/auth/callback`);
-    return `${OAUTH_BASE}?app_id=${APP_ID}&l=EN&brand=DOLLARPRINTERPRO&redirect_uri=${redirect_uri}`;
+    return `${OAUTH_BASE}?app_id=${APP_ID}&l=EN&brand=DOLLARPRINTERPRO`;
 };
