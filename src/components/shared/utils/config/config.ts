@@ -3,6 +3,7 @@ import { isStaging } from '../url/helpers';
 
 export const APP_IDS = {
     LOCALHOST: 36300,
+    DOLLARPRINTERPRO: 125748,
     TMP_STAGING: 64584,
     STAGING: 29934,
     STAGING_BE: 29934,
@@ -23,7 +24,7 @@ export const domain_app_ids = {
     'dbot.deriv.com': APP_IDS.PRODUCTION,
     'dbot.deriv.be': APP_IDS.PRODUCTION_BE,
     'dbot.deriv.me': APP_IDS.PRODUCTION_ME,
-    'bot.replit.app': APP_IDS.LOCALHOST,
+    'bot.replit.app': APP_IDS.DOLLARPRINTERPRO,
     'dollarprinter.pro': 125748,
 };
 
@@ -75,11 +76,11 @@ export const getDefaultAppIdAndUrl = () => {
     const server_url = getDefaultServerURL();
 
     if (isTestLink()) {
-        return { app_id: APP_IDS.LOCALHOST, server_url };
+        return { app_id: APP_IDS.DOLLARPRINTERPRO, server_url };
     }
 
     const current_domain = getCurrentProductionDomain() ?? '';
-    const app_id = domain_app_ids[current_domain as keyof typeof domain_app_ids] ?? APP_IDS.PRODUCTION;
+    const app_id = domain_app_ids[current_domain as keyof typeof domain_app_ids] ?? APP_IDS.DOLLARPRINTERPRO;
 
     return { app_id, server_url };
 };
@@ -94,9 +95,9 @@ export const getAppId = () => {
     } else if (isStaging()) {
         app_id = APP_IDS.STAGING;
     } else if (isTestLink()) {
-        app_id = APP_IDS.LOCALHOST;
+        app_id = APP_IDS.DOLLARPRINTERPRO;
     } else {
-        app_id = domain_app_ids[current_domain as keyof typeof domain_app_ids] ?? APP_IDS.PRODUCTION;
+        app_id = domain_app_ids[current_domain as keyof typeof domain_app_ids] ?? APP_IDS.DOLLARPRINTERPRO;
     }
 
     return app_id;
