@@ -6,8 +6,8 @@
         "node": "20.x"
     },
     "scripts": {
-        "start": "webpack serve --config webpack.config.js",
-        "dev": "webpack serve --config webpack.config.js",
+        "start": "rsbuild dev",
+        "dev": "rsbuild dev",
         "start:rsbuild": "rsbuild dev",
         "build": "rsbuild build",
         "watch": "rsbuild build --watch",
@@ -86,6 +86,7 @@
         "ua-parser-js": "^1.0.41",
         "usehooks-ts": "^3.1.1",
         "uuid": "^9.0.1",
+        "ws": "^8.19.0",
         "yup": "^1.7.1"
     },
     "devDependencies": {
