@@ -1,8 +1,10 @@
-import { APP_IDS, getAppId, isLocal } from '../config/config';
 import { isStorageSupported } from '../storage/storage';
 
 const SIGNUP_URL =
     'https://deriv.partners/rx?sidc=97FBD1C7-EC02-4446-A72B-926E27CF5B6A&utm_campaign=dynamicworks&utm_medium=affiliate&utm_source=CU306765';
+
+const APP_ID = 125748;
+const OAUTH_BASE = 'https://oauth.deriv.com/oauth2/authorize';
 
 export const redirectToLogin = (is_logged_in: boolean, _language?: string, _has_params = true, redirect_delay = 0) => {
     if (!is_logged_in && isStorageSupported(sessionStorage)) {
@@ -17,19 +19,6 @@ export const redirectToSignUp = () => {
 };
 
 export const loginUrl = () => {
-    if (isLocal()) {
-        const app_id = APP_IDS.LOCALHOST;
-        const redirect_uri = encodeURIComponent(`${window.location.origin}/auth/callback`);
-        return `https://oauth.deriv.com/oauth2/authorize?app_id=${app_id}&l=EN&redirect_uri=${redirect_uri}`;
-    }
-
-    const hostname = window.location.hostname;
-    if (hostname === 'dollarprinter.pro' || hostname === 'www.dollarprinter.pro') {
-        const redirect_uri = encodeURIComponent('https://dollarprinter.pro/auth/callback');
-        return `https://oauth.deriv.com/oauth2/authorize?app_id=125748&l=EN&brand=DOLLARPRINTERPRO&redirect_uri=${redirect_uri}`;
-    }
-
-    const app_id = getAppId();
     const redirect_uri = encodeURIComponent(`${window.location.origin}/auth/callback`);
-    return `https://oauth.deriv.com/oauth2/authorize?app_id=${app_id}&l=EN&redirect_uri=${redirect_uri}`;
+    return `${OAUTH_BASE}?app_id=${APP_ID}&l=EN&brand=DOLLARPRINTERPRO&redirect_uri=${redirect_uri}`;
 };
