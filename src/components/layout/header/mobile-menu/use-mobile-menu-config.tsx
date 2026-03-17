@@ -10,15 +10,17 @@ import useTMB from '@/hooks/useTMB';
 import RootStore from '@/stores/root-store';
 import {
     LegacyAccountLimitsIcon,
-    LegacyCashierIcon,
     LegacyChartsIcon,
+    LegacyDepositIcon,
     LegacyHelpCentreIcon,
     LegacyHomeOldIcon,
-    LegacyProfileSmIcon,
     LegacyReportsIcon,
     LegacyResponsibleTradingIcon,
+    LegacySettings1pxIcon,
     LegacyTheme1pxIcon,
+    LegacyTransferIcon,
     LegacyWhatsappIcon,
+    LegacyWithdrawalIcon,
 } from '@deriv/quill-icons/Legacy';
 import { BrandDerivLogoCoralIcon } from '@deriv/quill-icons/Logo';
 import { useTranslations } from '@deriv-com/translations';
@@ -124,15 +126,26 @@ const useMobileMenuConfig = (client?: RootStore['client']) => {
                     as: 'a',
                     href: getRedirectUrl(),
                     label: localize('Account Settings'),
-                    LeftComponent: LegacyProfileSmIcon,
+                    LeftComponent: LegacySettings1pxIcon,
                 },
-                !has_wallet &&
-                    !is_hub_enabled_country && {
-                        as: 'a',
-                        href: standalone_routes.cashier_deposit,
-                        label: localize('Cashier'),
-                        LeftComponent: LegacyCashierIcon,
-                    },
+                {
+                    as: 'a',
+                    href: getAccountUrl(standalone_routes.cashier_deposit),
+                    label: localize('Deposit'),
+                    LeftComponent: LegacyDepositIcon,
+                },
+                {
+                    as: 'a',
+                    href: getAccountUrl(standalone_routes.cashier_withdrawal),
+                    label: localize('Withdrawal'),
+                    LeftComponent: LegacyWithdrawalIcon,
+                },
+                {
+                    as: 'a',
+                    href: getAccountUrl(standalone_routes.cashier_transfer),
+                    label: localize('Transfer'),
+                    LeftComponent: LegacyTransferIcon,
+                },
                 client?.is_logged_in && {
                     as: 'button',
                     label: localize('Reports'),
