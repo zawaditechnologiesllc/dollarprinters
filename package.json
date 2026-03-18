@@ -46,6 +46,7 @@
         "classnames": "^2.5.1",
         "clsx": "^2.1.1",
         "cookie-parser": "^1.4.7",
+        "cors": "^2.8.6",
         "crc-32": "^1.2.2",
         "debounce": "^2.2.0",
         "dom-helpers": "^6.0.1",
