@@ -67,3 +67,7 @@ externalPort = 3000
 [userenv.shared]
 ADMIN_API_PORT = "3001"
 JWT_SECRET = "9263efef63c3a8a286eb0a8cf1cda604002b0b07d063c6c0ec382bbba0ee6988d336d525d2beb1454f29c30d0c7ba7c8f5d53dd69257ca831cbf4da485f950b1"
+
+[postMerge]
+path = "scripts/post-merge.sh"
+timeoutMs = 120000
