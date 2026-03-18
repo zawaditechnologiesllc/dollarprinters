@@ -95,10 +95,6 @@ export default defineConfig({
         },
         publicDir: [
             { name: './public' },
-            {
-                name: './node_modules/@deriv/deriv-charts/dist',
-                prefix: '/js/smartcharts',
-            },
         ],
         proxy: {
             '/api': {

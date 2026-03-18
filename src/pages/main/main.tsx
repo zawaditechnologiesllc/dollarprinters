@@ -13,7 +13,6 @@ import { DBOT_TABS, TAB_IDS } from '@/constants/bot-contents';
 import { api_base, updateWorkspaceName } from '@/external/bot-skeleton';
 import { CONNECTION_STATUS } from '@/external/bot-skeleton/services/api/observables/connection-status-stream';
 import { isDbotRTL } from '@/external/bot-skeleton/utils/workspace';
-import { useOauth2 } from '@/hooks/auth/useOauth2';
 import { useApiBase } from '@/hooks/useApiBase';
 import { useStore } from '@/hooks/useStore';
 import useTMB from '@/hooks/useTMB';
@@ -83,7 +82,7 @@ const AppWrapper = observer(() => {
     };
     const active_hash_tab = GetHashedValue(active_tab);
 
-    const { onRenderTMBCheck, isTmbEnabled } = useTMB();
+    const { onRenderTMBCheck, isTmbEnabled, isOAuth2Enabled } = useTMB();
 
     React.useEffect(() => {
         const el_dashboard = document.getElementById('id-dbot-dashboard');
@@ -229,7 +228,6 @@ const AppWrapper = observer(() => {
         [active_tab]
     );
 
-    const { isOAuth2Enabled } = useOauth2();
     const handleLoginGeneration = async () => {
         if (!isOAuth2Enabled) {
             window.location.replace(generateOAuthURL());
