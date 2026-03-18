@@ -100,10 +100,14 @@ const setLocalStorageToken = async (
 
 export const AuthWrapper = () => {
     const [isAuthComplete, setIsAuthComplete] = React.useState(false);
-    const { loginInfo, paramsToDelete } = URLUtils.getLoginInfoFromURL();
+    // Compute login info once on mount — extracting it on every render creates new
+    // array references each time, causing the effect to re-fire indefinitely.
+    const loginInfoRef = React.useRef(URLUtils.getLoginInfoFromURL());
     const { isOnline } = useOfflineDetection();
 
     React.useEffect(() => {
+        const { loginInfo, paramsToDelete } = loginInfoRef.current;
+
         const initializeAuth = async () => {
             try {
                 // /auth/callback is handled entirely by AuthCallbackPage.
@@ -134,7 +138,9 @@ export const AuthWrapper = () => {
         }
 
         initializeAuth();
-    }, [loginInfo, paramsToDelete, isOnline]);
+        // loginInfoRef is stable; only re-run if online status changes
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isOnline]);
 
     // Add timeout for offline scenarios to prevent infinite loading
     React.useEffect(() => {

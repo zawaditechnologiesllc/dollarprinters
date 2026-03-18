@@ -56,6 +56,7 @@ class APIBase {
     active_symbols = [];
     current_auth_subscriptions: SubscriptionPromise[] = [];
     is_authorized = false;
+    is_reconnecting = false;
     active_symbols_promise: Promise<void> | null = null;
     common_store: CommonStore | undefined;
     landing_company: string | null = null;
@@ -147,12 +148,16 @@ class APIBase {
     }
 
     reconnectIfNotConnected = () => {
+        if (this.is_reconnecting) return;
         // eslint-disable-next-line no-console
         console.log('connection state: ', this.api?.connection?.readyState);
         if (this.api?.connection?.readyState && this.api?.connection?.readyState > 1) {
             // eslint-disable-next-line no-console
             console.log('Info: Connection to the server was closed, trying to reconnect.');
-            this.init(true);
+            this.is_reconnecting = true;
+            this.init(true).finally(() => {
+                this.is_reconnecting = false;
+            });
         }
     };
 
@@ -197,10 +202,11 @@ class APIBase {
             this.subscribe();
             // this.getSelfExclusion(); commented this so we dont call it from two places
         } catch (e) {
-            console.error('Authorization failed:', e);
+            console.error('Authorization failed — will retry on next reconnect:', e);
             this.is_authorized = false;
-            clearAuthData();
             setIsAuthorized(false);
+            // Do NOT call clearAuthData() here — a network blip during authorize
+            // should not log the user out. The next reconnect will re-authorize.
             globalObserver.emit('Error', e);
         } finally {
             setIsAuthorizing(false);
