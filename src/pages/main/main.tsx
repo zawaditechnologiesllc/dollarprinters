@@ -36,6 +36,7 @@ const ChartWrapper = lazy(() => import('../chart/chart-wrapper'));
 const Tutorial = lazy(() => import('../tutorials'));
 const FreeBots = lazy(() => import('../free-bots'));
 const AnalysisTool = lazy(() => import('../analysis-tool'));
+const Dcircles = lazy(() => import('../dcircles'));
 
 const AppWrapper = observer(() => {
     const { connectionStatus } = useApiBase();
@@ -67,7 +68,7 @@ const AppWrapper = observer(() => {
     const { clear } = summary_card;
     const { DASHBOARD, BOT_BUILDER } = DBOT_TABS;
     const init_render = React.useRef(true);
-    const hash = ['dashboard', 'bot_builder', 'chart', 'tutorial', 'free_bots', 'analysis_tool'];
+    const hash = ['dashboard', 'bot_builder', 'free_bots', 'chart', 'dcircles', 'analysis_tool', 'tutorial'];
     const { isDesktop } = useDevice();
     const location = useLocation();
     const navigate = useNavigate();
@@ -306,53 +307,6 @@ const AppWrapper = observer(() => {
                             <div
                                 label={
                                     <>
-                                        <LabelPairedChartLineCaptionRegularIcon
-                                            height='24px'
-                                            width='24px'
-                                            fill='var(--text-general)'
-                                        />
-                                        <Localize i18n_default_text='Charts' />
-                                    </>
-                                }
-                                id={
-                                    is_chart_modal_visible || is_trading_view_modal_visible
-                                        ? 'id-charts--disabled'
-                                        : 'id-charts'
-                                }
-                            >
-                                <Suspense
-                                    fallback={<ChunkLoader message={localize('Please wait, loading chart...')} />}
-                                >
-                                    <ChartWrapper show_digits_stats={false} />
-                                </Suspense>
-                            </div>
-                            <div
-                                label={
-                                    <>
-                                        <LegacyGuide1pxIcon
-                                            height='16px'
-                                            width='16px'
-                                            fill='var(--text-general)'
-                                            className='icon-general-fill-g-path'
-                                        />
-                                        <Localize i18n_default_text='Tutorials' />
-                                    </>
-                                }
-                                id='id-tutorials'
-                            >
-                                <div className='tutorials-wrapper'>
-                                    <Suspense
-                                        fallback={
-                                            <ChunkLoader message={localize('Please wait, loading tutorials...')} />
-                                        }
-                                    >
-                                        <Tutorial handleTabChange={handleTabChange} />
-                                    </Suspense>
-                                </div>
-                            </div>
-                            <div
-                                label={
-                                    <>
                                         <LabelPairedObjectsColumnCaptionRegularIcon
                                             height='24px'
                                             width='24px'
@@ -381,6 +335,52 @@ const AppWrapper = observer(() => {
                                             width='24px'
                                             fill='var(--text-general)'
                                         />
+                                        <Localize i18n_default_text='Charts' />
+                                    </>
+                                }
+                                id={
+                                    is_chart_modal_visible || is_trading_view_modal_visible
+                                        ? 'id-charts--disabled'
+                                        : 'id-charts'
+                                }
+                            >
+                                <Suspense
+                                    fallback={<ChunkLoader message={localize('Please wait, loading chart...')} />}
+                                >
+                                    <ChartWrapper show_digits_stats={false} />
+                                </Suspense>
+                            </div>
+                            <div
+                                label={
+                                    <>
+                                        <LabelPairedChartLineCaptionRegularIcon
+                                            height='24px'
+                                            width='24px'
+                                            fill='var(--text-general)'
+                                        />
+                                        <Localize i18n_default_text='D-Circles' />
+                                    </>
+                                }
+                                id='id-dcircles'
+                            >
+                                <div className='dcircles-wrapper'>
+                                    <Suspense
+                                        fallback={
+                                            <ChunkLoader message={localize('Please wait, loading D-Circles...')} />
+                                        }
+                                    >
+                                        <Dcircles />
+                                    </Suspense>
+                                </div>
+                            </div>
+                            <div
+                                label={
+                                    <>
+                                        <LabelPairedChartLineCaptionRegularIcon
+                                            height='24px'
+                                            width='24px'
+                                            fill='var(--text-general)'
+                                        />
                                         <Localize i18n_default_text='Analysis Tool' />
                                     </>
                                 }
@@ -393,6 +393,30 @@ const AppWrapper = observer(() => {
                                         }
                                     >
                                         <AnalysisTool />
+                                    </Suspense>
+                                </div>
+                            </div>
+                            <div
+                                label={
+                                    <>
+                                        <LegacyGuide1pxIcon
+                                            height='16px'
+                                            width='16px'
+                                            fill='var(--text-general)'
+                                            className='icon-general-fill-g-path'
+                                        />
+                                        <Localize i18n_default_text='Tutorials' />
+                                    </>
+                                }
+                                id='id-tutorials'
+                            >
+                                <div className='tutorials-wrapper'>
+                                    <Suspense
+                                        fallback={
+                                            <ChunkLoader message={localize('Please wait, loading tutorials...')} />
+                                        }
+                                    >
+                                        <Tutorial handleTabChange={handleTabChange} />
                                     </Suspense>
                                 </div>
                             </div>
