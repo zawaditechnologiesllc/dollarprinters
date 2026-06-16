@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { generateOAuthURL } from '@/components/shared';
 import { api_base } from '@/external/bot-skeleton';

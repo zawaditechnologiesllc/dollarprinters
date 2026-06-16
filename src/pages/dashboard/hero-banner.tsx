@@ -1,4 +1,3 @@
-import React from 'react';
 import { observer } from 'mobx-react-lite';
 import { DBOT_TABS } from '@/constants/bot-contents';
 import { useStore } from '@/hooks/useStore';
