@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 import { ANALYSIS_SYMBOLS, TICK_COUNT_OPTIONS, useTickAnalysis } from './useTickAnalysis';
 import './analysis-tool.scss';
