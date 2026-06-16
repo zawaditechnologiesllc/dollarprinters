@@ -34,6 +34,8 @@ const Layout = lazy(() => import('../components/layout'));
 const AppRoot = lazy(() => import('./app-root'));
 const FreeBots = lazy(() => import('../pages/free-bots'));
 const AnalysisTool = lazy(() => import('../pages/analysis-tool'));
+const Signals = lazy(() => import('../pages/signals'));
+const CopyTrading = lazy(() => import('../pages/copy-trading'));
 const AdminLogin = lazy(() => import('../pages/admin-login'));
 const AdminDashboard = lazy(() => import('../pages/admin'));
 
@@ -105,6 +107,8 @@ const router = createBrowserRouter(
                 <Route path='signup-redirect' element={<SignupRedirectHandler />} />
                 <Route path='free-bots' element={<FreeBots />} />
                 <Route path='analysis-tool' element={<AnalysisTool />} />
+                <Route path='signals' element={<Signals />} />
+                <Route path='copy-trading' element={<CopyTrading />} />
             </Route>
         </>
     )

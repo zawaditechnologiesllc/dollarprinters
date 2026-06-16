@@ -754,7 +754,9 @@
 
 .free-bots-wrapper,
 .analysis-tool-wrapper,
-.dcircles-wrapper {
+.dcircles-wrapper,
+.signals-wrapper,
+.copy-trading-wrapper {
     width: 100%;
     height: calc(100vh - 9rem);
     background: var(--general-main-1);

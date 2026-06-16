@@ -458,3 +458,129 @@
         margin-inline-start: 0.4rem;
     }
 }
+
+/* ----------------------------------------*
+ *  Hero banner (Dollar Printers refresh)
+ *----------------------------------------- */
+.hero-banner {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.6rem;
+    margin: 0.8rem 1.6rem 1.2rem;
+    padding: 2.2rem 2.4rem;
+    border-radius: 16px;
+    overflow: hidden;
+    color: #fff;
+    background: linear-gradient(120deg, #1d1f3a 0%, #3a2470 45%, #ff444f 130%);
+    box-shadow: 0 14px 38px rgb(29 31 58 / 28%);
+
+    &:after {
+        content: '';
+        position: absolute;
+        top: -40%;
+        right: -10%;
+        width: 38rem;
+        height: 38rem;
+        background: radial-gradient(circle, rgb(255 100 68 / 45%) 0%, rgb(255 100 68 / 0%) 70%);
+        pointer-events: none;
+    }
+
+    &__content {
+        position: relative;
+        z-index: 1;
+        max-width: 64rem;
+    }
+
+    &__eyebrow {
+        display: inline-block;
+        font-size: 1.2rem;
+        font-weight: 700;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        opacity: 0.85;
+    }
+
+    &__title {
+        margin: 0.6rem 0 0.8rem;
+        font-size: 2.8rem;
+        font-weight: 800;
+        line-height: 1.15;
+
+        @include mobile-or-tablet-screen {
+            font-size: 2.1rem;
+        }
+    }
+
+    &__subtitle {
+        margin: 0 0 1.6rem;
+        font-size: 1.4rem;
+        line-height: 1.5;
+        opacity: 0.92;
+    }
+
+    &__actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.8rem;
+    }
+
+    &__chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.7rem 1.2rem;
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: #fff;
+        cursor: pointer;
+        border: 1px solid rgb(255 255 255 / 28%);
+        border-radius: 999px;
+        background: rgb(255 255 255 / 12%);
+        backdrop-filter: blur(6px);
+        transition:
+            transform 0.15s ease,
+            background 0.15s ease;
+
+        &:hover {
+            transform: translateY(-2px);
+            background: rgb(255 255 255 / 22%);
+        }
+    }
+
+    &__chip-icon {
+        font-size: 1.5rem;
+    }
+
+    &__badge {
+        position: relative;
+        z-index: 1;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.6rem;
+        padding: 0.6rem 1.1rem;
+        font-size: 1.2rem;
+        font-weight: 600;
+        white-space: nowrap;
+        border-radius: 999px;
+        background: rgb(0 0 0 / 22%);
+
+        @include mobile-or-tablet-screen {
+            display: none;
+        }
+    }
+
+    &__badge-dot {
+        width: 0.9rem;
+        height: 0.9rem;
+        border-radius: 50%;
+        background: #4ade80;
+        box-shadow: 0 0 0 4px rgb(74 222 128 / 25%);
+    }
+
+    @include mobile-or-tablet-screen {
+        margin: 0.6rem 0.8rem 1rem;
+        padding: 1.6rem 1.4rem;
+    }
+}
