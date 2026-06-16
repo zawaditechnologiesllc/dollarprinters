@@ -37,6 +37,8 @@ const Tutorial = lazy(() => import('../tutorials'));
 const FreeBots = lazy(() => import('../free-bots'));
 const AnalysisTool = lazy(() => import('../analysis-tool'));
 const Dcircles = lazy(() => import('../dcircles'));
+const Signals = lazy(() => import('../signals'));
+const CopyTrading = lazy(() => import('../copy-trading'));
 
 const AppWrapper = observer(() => {
     const { connectionStatus } = useApiBase();
@@ -68,7 +70,17 @@ const AppWrapper = observer(() => {
     const { clear } = summary_card;
     const { DASHBOARD, BOT_BUILDER } = DBOT_TABS;
     const init_render = React.useRef(true);
-    const hash = ['dashboard', 'bot_builder', 'free_bots', 'chart', 'dcircles', 'analysis_tool', 'tutorial'];
+    const hash = [
+        'dashboard',
+        'bot_builder',
+        'free_bots',
+        'chart',
+        'dcircles',
+        'analysis_tool',
+        'signals',
+        'copy_trading',
+        'tutorial',
+    ];
     const { isDesktop } = useDevice();
     const location = useLocation();
     const navigate = useNavigate();
@@ -393,6 +405,50 @@ const AppWrapper = observer(() => {
                                         }
                                     >
                                         <AnalysisTool />
+                                    </Suspense>
+                                </div>
+                            </div>
+                            <div
+                                label={
+                                    <>
+                                        <LabelPairedChartLineCaptionRegularIcon
+                                            height='24px'
+                                            width='24px'
+                                            fill='var(--text-general)'
+                                        />
+                                        <Localize i18n_default_text='Signals' />
+                                    </>
+                                }
+                                id='id-signals'
+                            >
+                                <div className='signals-wrapper'>
+                                    <Suspense
+                                        fallback={<ChunkLoader message={localize('Please wait, loading signals...')} />}
+                                    >
+                                        <Signals />
+                                    </Suspense>
+                                </div>
+                            </div>
+                            <div
+                                label={
+                                    <>
+                                        <LabelPairedObjectsColumnCaptionRegularIcon
+                                            height='24px'
+                                            width='24px'
+                                            fill='var(--text-general)'
+                                        />
+                                        <Localize i18n_default_text='Copy Trading' />
+                                    </>
+                                }
+                                id='id-copy-trading'
+                            >
+                                <div className='copy-trading-wrapper'>
+                                    <Suspense
+                                        fallback={
+                                            <ChunkLoader message={localize('Please wait, loading copy trading...')} />
+                                        }
+                                    >
+                                        <CopyTrading />
                                     </Suspense>
                                 </div>
                             </div>
