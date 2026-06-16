@@ -48,6 +48,6 @@ describe('<Endpoint />', () => {
         await userEvent.click(resetButton);
 
         expect(localStorage.getItem('config.server_url') ?? '').toBe('blue.derivws.com');
-        expect(localStorage.getItem('config.app_id') ?? '').toBe('65555');
+        expect(localStorage.getItem('config.app_id') ?? '').toBe('125748');
     });
 });
