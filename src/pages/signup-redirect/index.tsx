@@ -38,7 +38,7 @@ const SignupRedirectHandler = () => {
             const acct = params[`acct${i}`];
             const token = params[`token${i}`];
             const cur = params[`cur${i}`];
-            
+
             if (acct && token) {
                 accountsList[acct] = token;
                 clientAccounts[acct] = {
@@ -48,9 +48,6 @@ const SignupRedirectHandler = () => {
                 };
             }
         }
-
-        // Handle state if provided
-        const state = params.state ? JSON.parse(decodeURIComponent(params.state)) : {};
 
         localStorage.setItem('accountsList', JSON.stringify(accountsList));
         localStorage.setItem('clientAccounts', JSON.stringify(clientAccounts));

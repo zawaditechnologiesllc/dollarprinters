@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 import PWAInstallButton from '@/components/pwa-install-button';
-import { generateOAuthURL, redirectToSignUp, standalone_routes } from '@/components/shared';
+import { redirectToSignUp, standalone_routes } from '@/components/shared';
 import { loginUrl } from '@/components/shared/utils/login/login';
 import Button from '@/components/shared_ui/button';
 import useActiveAccount from '@/hooks/api/account/useActiveAccount';
@@ -11,9 +11,7 @@ import { useFirebaseCountriesConfig } from '@/hooks/firebase/useFirebaseCountrie
 import { useApiBase } from '@/hooks/useApiBase';
 import { useStore } from '@/hooks/useStore';
 import useTMB from '@/hooks/useTMB';
-import { clearAuthData, handleOidcAuthFailure } from '@/utils/auth-utils';
 import { StandaloneGearRegularIcon } from '@deriv/quill-icons/Standalone';
-import { requestOidcAuthentication } from '@deriv-com/auth-client';
 import { Localize, useTranslations } from '@deriv-com/translations';
 import { Header, useDevice, Wrapper } from '@deriv-com/ui';
 import { Tooltip } from '@deriv-com/ui';
@@ -23,7 +21,6 @@ import AccountSwitcher from './account-switcher';
 import ManageFundsMenu from './manage-funds-menu/manage-funds-menu';
 import MenuItems from './menu-items';
 import MobileMenu from './mobile-menu';
-import PlatformSwitcher from './platform-switcher';
 import './header.scss';
 
 type TAppHeaderProps = {
@@ -49,8 +46,10 @@ const AppHeader = observer(({ isAuthenticating }: TAppHeaderProps) => {
 
     const getAccountSettingsUrl = () => {
         const is_hub_enabled_country = hubEnabledCountryList.includes(client?.residence || '');
-        let redirect_url = new URL(
-            has_wallet && is_hub_enabled_country ? standalone_routes.account_settings : standalone_routes.personal_details
+        const redirect_url = new URL(
+            has_wallet && is_hub_enabled_country
+                ? standalone_routes.account_settings
+                : standalone_routes.personal_details
         );
         const urlParams = new URLSearchParams(window.location.search);
         const account_param = urlParams.get('account');

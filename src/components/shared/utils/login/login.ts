@@ -6,7 +6,7 @@ const SIGNUP_URL =
 const APP_ID = 125748;
 const OAUTH_BASE = 'https://oauth.deriv.com/oauth2/authorize';
 
-export const redirectToLogin = (is_logged_in: boolean, _language?: string, _has_params = true, redirect_delay = 0) => {
+export const redirectToLogin = (is_logged_in: boolean, _language?: string, redirect_delay = 0) => {
     if (!is_logged_in && isStorageSupported(sessionStorage)) {
         setTimeout(() => {
             window.location.href = loginUrl();
